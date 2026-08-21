@@ -1,0 +1,8 @@
+# Core engine (engine.py, demo.py) needs NOTHING beyond the standard library.
+# The following are only for the optional FastAPI backend (api.py):
+fastapi>=0.110
+uvicorn>=0.29
+
+# OPTIONAL upgrade path — swap lexical matching for semantic embeddings.
+# Needs internet access to huggingface on first run to download the model.
+# sentence-transformers>=2.6   # multilingual model handles RO+EN natively

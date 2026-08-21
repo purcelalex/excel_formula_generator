@@ -1,0 +1,35 @@
+# Development setup.  Start it with:   docker compose up --build
+# Then open http://localhost:8000/health
+
+name: excel-formula-generator
+
+services:
+  api:
+    build: .
+    container_name: efg-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Your source code, live. Edit a .py file on the laptop and the server
+      # reloads — no rebuild needed.
+      - ./formula_engine:/app
+      # The analytics database on a NAMED VOLUME. This is the important line:
+      # the .db file lives inside Docker's own storage, not in your project
+      # folder, so OneDrive cannot sync (and corrupt) it.
+      - analytics:/data
+    environment:
+      DB_PATH: /data/analytics.db
+      # Read from a .env file if present; the fallback is dev-only.
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-dev-only-not-for-public-use}
+      # Windows + WSL2 does not deliver file-change events reliably across the
+      # host boundary, so the reloader polls instead of watching.
+      WATCHFILES_FORCE_POLLING: "true"
+    command: >
+      uvicorn api:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+    restart: unless-stopped
+
+volumes:
+  analytics:
