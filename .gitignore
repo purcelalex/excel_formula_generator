@@ -10,6 +10,10 @@ env/
 *.db-wal
 *.db-shm
 
+# Created by Docker when it mounts the page into the container for local
+# development. The real file is index.html at the project root.
+backend/static/
+
 # Secrets
 .env
 

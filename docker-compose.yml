@@ -1,5 +1,5 @@
-# Development setup.  Start it with:   docker compose up --build
-# Then open http://localhost:8000/health
+# Development setup.  Start with:   docker compose up --build
+# Then open http://localhost:8000/docs
 
 name: excel-formula-generator
 
@@ -10,22 +10,27 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Your source code, live. Edit a .py file on the laptop and the server
-      # reloads — no rebuild needed.
-      - ./formula_engine:/app
-      # The analytics database on a NAMED VOLUME. This is the important line:
-      # the .db file lives inside Docker's own storage, not in your project
-      # folder, so OneDrive cannot sync (and corrupt) it.
+      # Source code, live. Edit a .py file and the server reloads.
+      - ./backend:/app
+      # The analytics database on a NAMED VOLUME — inside Docker's own storage,
+      # never in the project folder, so no sync tool can corrupt it.
       - analytics:/data
+      # The page, served by the API at http://localhost:8000 so that the
+      # browser sees one origin and has nothing to block. Read-only: the
+      # container never needs to write to your source file.
+      - ./index.html:/app/static/index.html:ro
     environment:
       DB_PATH: /data/analytics.db
-      # Read from a .env file if present; the fallback is dev-only.
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-dev-only-not-for-public-use}
-      # Windows + WSL2 does not deliver file-change events reliably across the
-      # host boundary, so the reloader polls instead of watching.
+      # Read from .env if present. Admin routes stay disabled until both are set;
+      # generate them with:  python -m app.security.auth "your password"
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-}
+      ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET:-}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000,http://localhost:5500}
+      # Windows and WSL2 do not deliver file-change events reliably across the
+      # host boundary, so the reloader polls instead.
       WATCHFILES_FORCE_POLLING: "true"
     command: >
-      uvicorn api:app
+      uvicorn app.main:app
       --host 0.0.0.0
       --port 8000
       --reload

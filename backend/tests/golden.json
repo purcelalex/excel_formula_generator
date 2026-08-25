@@ -1,0 +1,169 @@
+{
+  "_comment": [
+    "Golden cases: a description in, an exact formula out.",
+    "",
+    "This file is the regression net for a rules engine. Every new keyword in",
+    "the knowledge base can steal a match from an existing one, and nothing",
+    "else will tell you. Add a case here before fixing a bug, so the fix is",
+    "proven and stays proven.",
+    "",
+    "`table` names one of the fixtures in test_golden.py. `formula` must match",
+    "exactly, separators included — that is the point.",
+    "",
+    "Cases marked \"expect\": \"template\" assert the engine correctly declines",
+    "to guess, which matters as much as the cases it answers."
+  ],
+  "tables": {
+    "sales": "City\tName\tPrice\nChisinau\tAna\t100\nIasi\tBogdan\t200\nChisinau\tCarmen\t150",
+    "stock": "Product\tCategory\tQuantity\tPrice\nLaptop\tIT\t5\t1200\nMouse\tIT\t40\t25\nChair\tOffice\t12\t150",
+    "beers": "index\tid\tbeer_name\tabv\tounces\n0\t2264\tRise of the Phoenix\t0.066\t12\n1\t2265\t18th Street\t0.071\t12\n2\t2266\tPumpion\t0.089\t16"
+  },
+  "cases": [
+    {
+      "name": "english conditional sum with a value from the data",
+      "description": "sum price where city is Chisinau",
+      "table": "sales",
+      "formula": "=SUMIF(A2:A4,\"Chisinau\",C2:C4)",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "romanian conditional sum uses semicolons",
+      "description": "aduna pretul unde orasul este Chisinau",
+      "table": "sales",
+      "formula": "=SUMIF(A2:A4;\"Chisinau\";C2:C4)",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "romanian with diacritics still detected as romanian",
+      "description": "adună prețul unde orașul este Chisinau",
+      "table": "sales",
+      "formula": "=SUMIF(A2:A4;\"Chisinau\";C2:C4)",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "english conditional count",
+      "description": "count rows where city is Iasi",
+      "table": "sales",
+      "formula": "=COUNTIF(A2:A4,\"Iasi\")",
+      "intent": "conditional_count"
+    },
+    {
+      "name": "romanian conditional count",
+      "description": "cate randuri au orasul Iasi",
+      "table": "sales",
+      "formula": "=COUNTIF(A2:A4;\"Iasi\")",
+      "intent": "conditional_count"
+    },
+    {
+      "name": "plain sum picks the numeric column",
+      "description": "total price",
+      "table": "sales",
+      "formula": "=SUM(C2:C4)",
+      "intent": "plain_sum"
+    },
+    {
+      "name": "plain average",
+      "description": "what is the average price",
+      "table": "sales",
+      "formula": "=AVERAGE(C2:C4)",
+      "intent": "plain_average"
+    },
+    {
+      "name": "maximum",
+      "description": "highest price",
+      "table": "sales",
+      "formula": "=MAX(C2:C4)",
+      "intent": "maximum"
+    },
+    {
+      "name": "minimum in romanian",
+      "description": "pretul cel mai mic",
+      "table": "sales",
+      "formula": "=MIN(C2:C4)",
+      "intent": "minimum"
+    },
+    {
+      "name": "numeric comparison uses the two-argument SUMIF form",
+      "description": "sum prices over 120",
+      "table": "sales",
+      "formula": "=SUMIF(C2:C4,\">120\")",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "romanian numeric comparison",
+      "description": "suma preturilor mai mari de 120",
+      "table": "sales",
+      "formula": "=SUMIF(C2:C4;\">120\")",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "count with a numeric comparison",
+      "description": "count prices over 120",
+      "table": "sales",
+      "formula": "=COUNTIF(C2:C4,\">120\")",
+      "intent": "conditional_count"
+    },
+    {
+      "name": "at least maps to greater-or-equal",
+      "description": "count quantity at least 12",
+      "table": "stock",
+      "formula": "=COUNTIF(C2:C4,\">=12\")",
+      "intent": "conditional_count"
+    },
+    {
+      "name": "conditional sum picks the right pair from four columns",
+      "description": "sum price where category is IT",
+      "table": "stock",
+      "formula": "=SUMIF(B2:B4,\"IT\",D2:D4)",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "explicit columns without a table, value before condition",
+      "description": "sum column B where column A is a city",
+      "table": null,
+      "formula": "=SUMIF(A2:A100,\"?\",B2:B100)",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "explicit columns in romanian without a table",
+      "description": "aduna coloana B unde coloana A este un oras",
+      "table": null,
+      "formula": "=SUMIF(A2:A100;\"?\";B2:B100)",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "google sheets keeps english names and comma for english input",
+      "description": "in google sheets sum price where city is Chisinau",
+      "table": "sales",
+      "formula": "=SUMIF(A2:A4,\"Chisinau\",C2:C4)",
+      "intent": "conditional_sum"
+    },
+    {
+      "name": "lookup returns XLOOKUP with a not-found message",
+      "description": "look up the price for a product",
+      "table": "stock",
+      "formula": "=XLOOKUP(E2,A2:A4,D2:D4,\"Not found\")",
+      "intent": "lookup"
+    },
+    {
+      "name": "nonsense request declines rather than guessing",
+      "description": "qwerty zxcvb",
+      "table": "sales",
+      "expect": "no_answer"
+    },
+    {
+      "name": "an identifier column is never averaged when a real quantity exists",
+      "description": "calculeaza media abv",
+      "table": "beers",
+      "formula": "=AVERAGE(D2:D4)",
+      "intent": "plain_average"
+    },
+    {
+      "name": "plain sum skips index and id columns",
+      "description": "total ounces",
+      "table": "beers",
+      "formula": "=SUM(E2:E4)",
+      "intent": "plain_sum"
+    }
+  ]
+}

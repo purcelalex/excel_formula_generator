@@ -1,0 +1,3242 @@
+{
+  "meta": {
+    "note": "Seed knowledge base. name_ro is filled ONLY where verified; nulls must be completed from Microsoft's official localized function list. Google Sheets always uses ENGLISH function names regardless of locale; only the argument separator changes. This is a representative subset, not the full function catalog.",
+    "schema_version": 1
+  },
+  "functions": [
+    {
+      "id": "arrayformula",
+      "name": "ARRAYFORMULA",
+      "name_ro": null,
+      "category": "array",
+      "platforms": [
+        "sheets"
+      ],
+      "syntax": "ARRAYFORMULA(array_expression)",
+      "description_en": "Applies a formula to a whole column/range at once (Google Sheets).",
+      "description_ro": "Aplică o formulă întregii coloane/interval dintr-o dată (Google Sheets).",
+      "keywords": [
+        "arrayformula",
+        "apply to whole column",
+        "fill down formula",
+        "aplica pe toata coloana",
+        "formula pe interval",
+        "spill formula sheets",
+        "formula pe tot intervalul",
+        "toata coloana deodata",
+        "fara a copia formula",
+        "extinde formula"
+      ],
+      "example": {
+        "formula": "=ARRAYFORMULA(A2:A100 * B2:B100)",
+        "explains_en": "Multiplies A by B for every row at once.",
+        "explains_ro": "Înmulțește A cu B pentru fiecare rând simultan."
+      },
+      "related": [
+        "filter",
+        "query"
+      ],
+      "notes": "Google Sheets. In modern Excel, dynamic arrays spill automatically."
+    },
+    {
+      "id": "filter",
+      "name": "FILTER",
+      "name_ro": "FILTRARE",
+      "category": "array",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "FILTER(array, include, [if_empty])",
+      "description_en": "Returns only the rows of a range that meet a condition.",
+      "description_ro": "Returnează doar rândurile unui interval care îndeplinesc o condiție.",
+      "keywords": [
+        "filter",
+        "return matching rows",
+        "show only where",
+        "filtrare",
+        "filtreaza",
+        "arata doar unde",
+        "extract rows condition",
+        "randuri care indeplinesc",
+        "dynamic filter"
+      ],
+      "example": {
+        "formula": "=FILTER(A2:C100, B2:B100>100)",
+        "explains_en": "Rows where column B > 100.",
+        "explains_ro": "Rândurile unde coloana B > 100."
+      },
+      "related": [
+        "unique",
+        "sort",
+        "query"
+      ]
+    },
+    {
+      "id": "importrange",
+      "name": "IMPORTRANGE",
+      "name_ro": null,
+      "category": "array",
+      "platforms": [
+        "sheets"
+      ],
+      "syntax": "IMPORTRANGE(spreadsheet_url, range_string)",
+      "description_en": "Pulls a range from another Google Sheets file into this one.",
+      "description_ro": "Aduce un interval dintr-un alt fișier Google Sheets în acesta.",
+      "keywords": [
+        "import from another spreadsheet",
+        "link two sheets",
+        "pull data from another file",
+        "connect spreadsheets",
+        "importa din alt fisier",
+        "leaga doua foi",
+        "adu date din alt document",
+        "conecteaza foi",
+        "import range"
+      ],
+      "example": {
+        "formula": "=IMPORTRANGE(\"https://docs.google.com/spreadsheets/d/ID\", \"Sheet1!A1:C100\")",
+        "explains_en": "Brings A1:C100 from another file. You must authorise the link once.",
+        "explains_ro": "Aduce A1:C100 din alt fișier. Trebuie să autorizezi legătura o dată."
+      },
+      "related": [
+        "query",
+        "filter",
+        "arrayformula"
+      ]
+    },
+    {
+      "id": "query",
+      "name": "QUERY",
+      "name_ro": null,
+      "category": "array",
+      "platforms": [
+        "sheets"
+      ],
+      "syntax": "QUERY(data, query, [headers])",
+      "description_en": "Runs an SQL-like query over a range (Google Sheets only).",
+      "description_ro": "Rulează o interogare de tip SQL asupra unui interval (doar Google Sheets).",
+      "keywords": [
+        "query",
+        "sql on sheet",
+        "select where",
+        "google sheets query",
+        "interogare",
+        "select unde",
+        "filter aggregate sql",
+        "query select where order by"
+      ],
+      "example": {
+        "formula": "=QUERY(A1:D100, \"select A, sum(D) where B = 'Active' group by A\", 1)",
+        "explains_en": "SQL-like aggregation over the range.",
+        "explains_ro": "Agregare de tip SQL asupra intervalului."
+      },
+      "related": [
+        "filter",
+        "sumifs"
+      ],
+      "notes": "Google Sheets only. No native Excel equivalent."
+    },
+    {
+      "id": "sequence",
+      "name": "SEQUENCE",
+      "name_ro": null,
+      "category": "array",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SEQUENCE(rows, [columns], [start], [step])",
+      "description_en": "Generates a list of consecutive numbers.",
+      "description_ro": "Generează o listă de numere consecutive.",
+      "keywords": [
+        "sequence",
+        "numbered list",
+        "1 to n",
+        "consecutive numbers",
+        "auto number",
+        "secventa",
+        "lista numerotata",
+        "numere consecutive",
+        "numerotare automata"
+      ],
+      "example": {
+        "formula": "=SEQUENCE(10)",
+        "explains_en": "The numbers 1 to 10 down a column.",
+        "explains_ro": "Numerele de la 1 la 10 pe o coloană."
+      },
+      "related": [
+        "unique"
+      ]
+    },
+    {
+      "id": "sort",
+      "name": "SORT",
+      "name_ro": null,
+      "category": "array",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SORT(range, [sort_column], [is_ascending])",
+      "description_en": "Returns a range sorted by one of its columns.",
+      "description_ro": "Returnează un interval sortat după una dintre coloanele sale.",
+      "keywords": [
+        "sort",
+        "order by",
+        "ascending",
+        "descending",
+        "arrange",
+        "sortare",
+        "sorteaza",
+        "ordoneaza",
+        "crescator",
+        "descrescator",
+        "sort the table",
+        "sort by column",
+        "sort rows",
+        "sorteaza tabelul",
+        "sorteaza dupa coloana",
+        "aranjeaza"
+      ],
+      "example": {
+        "formula": "=SORT(A2:C100, 3, FALSE)",
+        "explains_en": "A2:C100 sorted by the third column, largest first.",
+        "explains_ro": "A2:C100 sortat după a treia coloană, descrescător."
+      },
+      "related": [
+        "filter",
+        "unique",
+        "large"
+      ]
+    },
+    {
+      "id": "sortby",
+      "name": "SORTBY",
+      "name_ro": null,
+      "category": "array",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SORTBY(range, by_range1, [order1], ...)",
+      "description_en": "Sorts a range using the values of another range.",
+      "description_ro": "Sortează un interval folosind valorile din alt interval.",
+      "keywords": [
+        "sort by another column",
+        "sort by helper column",
+        "order using another range",
+        "sortare dupa alta coloana",
+        "ordoneaza dupa alt interval",
+        "sorteaza folosind",
+        "dupa alta coloana",
+        "sortby",
+        "sort using a key column",
+        "rank order by another field"
+      ],
+      "example": {
+        "formula": "=SORTBY(A2:B100, C2:C100, -1)",
+        "explains_en": "A2:B100 ordered by the values in C, largest first.",
+        "explains_ro": "A2:B100 ordonat după valorile din C, descrescător."
+      },
+      "related": [
+        "sort",
+        "filter",
+        "large"
+      ]
+    },
+    {
+      "id": "transpose",
+      "name": "TRANSPOSE",
+      "name_ro": null,
+      "category": "array",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "TRANSPOSE(range)",
+      "description_en": "Flips a range so rows become columns.",
+      "description_ro": "Întoarce un interval, transformând rândurile în coloane.",
+      "keywords": [
+        "transpose",
+        "rows to columns",
+        "flip",
+        "rotate table",
+        "switch rows and columns",
+        "transpune",
+        "randuri in coloane",
+        "roteste tabelul",
+        "inverseaza"
+      ],
+      "example": {
+        "formula": "=TRANSPOSE(A2:C10)",
+        "explains_en": "A2:C10 with rows and columns swapped.",
+        "explains_ro": "A2:C10 cu rândurile și coloanele inversate."
+      },
+      "related": [
+        "sort",
+        "filter"
+      ]
+    },
+    {
+      "id": "unique",
+      "name": "UNIQUE",
+      "name_ro": "UNICE",
+      "category": "array",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "UNIQUE(array)",
+      "description_en": "Returns the list of distinct values from a range.",
+      "description_ro": "Returnează lista valorilor distincte dintr-un interval.",
+      "keywords": [
+        "unique",
+        "distinct values",
+        "remove duplicates",
+        "unice",
+        "valori distincte",
+        "elimina duplicate",
+        "list unique",
+        "lista valori unice"
+      ],
+      "example": {
+        "formula": "=UNIQUE(A2:A100)",
+        "explains_en": "Distinct values from A2:A100.",
+        "explains_ro": "Valorile distincte din A2:A100."
+      },
+      "related": [
+        "filter",
+        "countif"
+      ]
+    },
+    {
+      "id": "vstack",
+      "name": "VSTACK",
+      "name_ro": "VSTACK",
+      "category": "array",
+      "platforms": [
+        "excel"
+      ],
+      "syntax": "VSTACK(array1, [array2], ...)",
+      "description_en": "Stacks ranges vertically into one array (modern Excel).",
+      "description_ro": "Stivuiește intervale pe verticală într-un singur vector (Excel modern).",
+      "keywords": [
+        "vstack",
+        "combine ranges vertically",
+        "append ranges",
+        "stack tables",
+        "combina intervale vertical",
+        "adauga tabele",
+        "stivuieste",
+        "combina intervale",
+        "uneste tabele",
+        "una sub alta",
+        "adauga randuri"
+      ],
+      "example": {
+        "formula": "=VSTACK(A2:A10, C2:C10)",
+        "explains_en": "Stacks two ranges into one column.",
+        "explains_ro": "Combină două intervale într-o coloană."
+      },
+      "related": [
+        "filter"
+      ],
+      "notes": "Modern Excel (365)."
+    },
+    {
+      "id": "date",
+      "name": "DATE",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "DATE(year, month, day)",
+      "description_en": "Builds a date from separate year, month and day values.",
+      "description_ro": "Construiește o dată din valori separate de an, lună și zi.",
+      "keywords": [
+        "build date",
+        "make date",
+        "combine year month day",
+        "create date",
+        "construieste data",
+        "creeaza data",
+        "combina an luna zi",
+        "data din an luna zi",
+        "formeaza data",
+        "asambleaza data",
+        "zi luna an"
+      ],
+      "example": {
+        "formula": "=DATE(A2, B2, C2)",
+        "explains_en": "A real date from year in A2, month in B2, day in C2.",
+        "explains_ro": "O dată reală din anul din A2, luna din B2, ziua din C2."
+      },
+      "related": [
+        "year",
+        "month",
+        "day",
+        "today"
+      ]
+    },
+    {
+      "id": "datedif",
+      "name": "DATEDIF",
+      "name_ro": "DATEDIF",
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "DATEDIF(start_date, end_date, unit)",
+      "description_en": "Returns the difference between two dates in years, months, or days.",
+      "description_ro": "Returnează diferența dintre două date în ani, luni sau zile.",
+      "keywords": [
+        "datedif",
+        "difference between dates",
+        "age from birthdate",
+        "months between",
+        "diferenta intre date",
+        "varsta din data nasterii",
+        "cate zile intre",
+        "days between dates",
+        "cate luni"
+      ],
+      "example": {
+        "formula": "=DATEDIF(A2, TODAY(), \"Y\")",
+        "explains_en": "Full years between A2 and today (e.g. age).",
+        "explains_ro": "Ani întregi între A2 și azi (ex. vârsta)."
+      },
+      "related": [
+        "today",
+        "now"
+      ]
+    },
+    {
+      "id": "day",
+      "name": "DAY",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "DAY(date)",
+      "description_en": "Returns the day of the month from a date.",
+      "description_ro": "Returnează ziua din lună dintr-o dată.",
+      "keywords": [
+        "day of month",
+        "extract day",
+        "which day",
+        "day number",
+        "ziua",
+        "ziua din luna",
+        "extrage ziua",
+        "ziua din data",
+        "ce zi",
+        "numarul zilei",
+        "extrage ziua din data",
+        "ziua lunii"
+      ],
+      "example": {
+        "formula": "=DAY(A2)",
+        "explains_en": "The day of the month from A2.",
+        "explains_ro": "Ziua din lună aflată în A2."
+      },
+      "related": [
+        "year",
+        "month",
+        "weekday"
+      ]
+    },
+    {
+      "id": "days",
+      "name": "DAYS",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "DAYS(end_date, start_date)",
+      "description_en": "Returns how many days lie between two dates.",
+      "description_ro": "Returnează câte zile sunt între două date.",
+      "keywords": [
+        "days between",
+        "difference in days",
+        "how many days",
+        "date difference",
+        "age in days",
+        "zile intre",
+        "cate zile",
+        "diferenta in zile",
+        "diferenta dintre date"
+      ],
+      "example": {
+        "formula": "=DAYS(B2, A2)",
+        "explains_en": "The number of days from A2 to B2.",
+        "explains_ro": "Numărul de zile de la A2 la B2."
+      },
+      "related": [
+        "datedif",
+        "networkdays",
+        "today"
+      ]
+    },
+    {
+      "id": "edate",
+      "name": "EDATE",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "EDATE(start_date, months)",
+      "description_en": "Returns the same day a number of months before or after a date.",
+      "description_ro": "Returnează aceeași zi, cu un număr de luni înainte sau după o dată.",
+      "keywords": [
+        "add months",
+        "months later",
+        "subscription renewal",
+        "same day next month",
+        "expiry",
+        "adauga luni",
+        "peste n luni",
+        "reinnoire",
+        "expirare",
+        "luna urmatoare"
+      ],
+      "example": {
+        "formula": "=EDATE(A2, 3)",
+        "explains_en": "Three months after the date in A2.",
+        "explains_ro": "Trei luni după data din A2."
+      },
+      "related": [
+        "eomonth",
+        "workday",
+        "date"
+      ]
+    },
+    {
+      "id": "eomonth",
+      "name": "EOMONTH",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "EOMONTH(start_date, months)",
+      "description_en": "Returns the last day of a month, a number of months from a date.",
+      "description_ro": "Returnează ultima zi a unei luni, la un număr de luni de la o dată.",
+      "keywords": [
+        "end of month",
+        "last day of month",
+        "month end",
+        "closing date",
+        "sfarsitul lunii",
+        "ultima zi din luna",
+        "final de luna",
+        "sfarsit de luna",
+        "finalul lunii",
+        "inchidere luna"
+      ],
+      "example": {
+        "formula": "=EOMONTH(A2, 0)",
+        "explains_en": "The last day of the month containing A2.",
+        "explains_ro": "Ultima zi a lunii în care se află A2."
+      },
+      "related": [
+        "edate",
+        "month",
+        "date"
+      ]
+    },
+    {
+      "id": "month",
+      "name": "MONTH",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MONTH(date)",
+      "description_en": "Returns the month of a date, as a number from 1 to 12.",
+      "description_ro": "Returnează luna dintr-o dată, ca număr de la 1 la 12.",
+      "keywords": [
+        "month",
+        "extract month",
+        "which month",
+        "month number",
+        "group by month",
+        "luna",
+        "extrage luna",
+        "numarul lunii",
+        "pe luni"
+      ],
+      "example": {
+        "formula": "=MONTH(A2)",
+        "explains_en": "The month number of the date in A2.",
+        "explains_ro": "Numărul lunii din data aflată în A2."
+      },
+      "related": [
+        "year",
+        "day",
+        "eomonth"
+      ]
+    },
+    {
+      "id": "networkdays",
+      "name": "NETWORKDAYS",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "NETWORKDAYS(start_date, end_date, [holidays])",
+      "description_en": "Counts the working days between two dates, excluding weekends and any holidays given.",
+      "description_ro": "Numără zilele lucrătoare dintre două date, fără weekenduri și fără sărbătorile date.",
+      "keywords": [
+        "working days",
+        "business days",
+        "weekdays between",
+        "days excluding weekends",
+        "deadline working days",
+        "zile lucratoare",
+        "zile lucratoare ramase",
+        "fara weekend",
+        "zile de lucru",
+        "cate zile lucratoare"
+      ],
+      "example": {
+        "formula": "=NETWORKDAYS(A2, B2)",
+        "explains_en": "Working days from A2 to B2, weekends excluded.",
+        "explains_ro": "Zilele lucrătoare de la A2 la B2, fără weekenduri."
+      },
+      "related": [
+        "workday",
+        "days",
+        "weekday"
+      ]
+    },
+    {
+      "id": "now",
+      "name": "NOW",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "NOW()",
+      "description_en": "Returns the current date and time, updated automatically.",
+      "description_ro": "Returnează data și ora curentă, actualizate automat.",
+      "keywords": [
+        "now",
+        "current time",
+        "date and time",
+        "timestamp",
+        "acum",
+        "ora curenta",
+        "data si ora",
+        "momentul curent"
+      ],
+      "example": {
+        "formula": "=NOW()",
+        "explains_en": "Today's date with the time.",
+        "explains_ro": "Data de azi împreună cu ora."
+      },
+      "related": [
+        "today",
+        "date"
+      ]
+    },
+    {
+      "id": "today",
+      "name": "TODAY",
+      "name_ro": "ASTĂZI",
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "TODAY()",
+      "description_en": "Returns the current date, updated automatically.",
+      "description_ro": "Returnează data curentă, actualizată automat.",
+      "keywords": [
+        "today",
+        "current date",
+        "date now",
+        "astazi",
+        "data curenta",
+        "data de azi",
+        "todays date",
+        "ziua curenta",
+        "data de astazi"
+      ],
+      "example": {
+        "formula": "=TODAY()",
+        "explains_en": "Current date.",
+        "explains_ro": "Data curentă."
+      },
+      "related": [
+        "now",
+        "datedif"
+      ]
+    },
+    {
+      "id": "weekday",
+      "name": "WEEKDAY",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "WEEKDAY(date, [type])",
+      "description_en": "Returns which day of the week a date falls on, as a number.",
+      "description_ro": "Returnează în ce zi a săptămânii cade o dată, ca număr.",
+      "keywords": [
+        "day of week",
+        "weekday",
+        "is it weekend",
+        "monday tuesday",
+        "which weekday",
+        "ziua saptamanii",
+        "ce zi a saptamanii",
+        "este weekend",
+        "luni marti"
+      ],
+      "example": {
+        "formula": "=WEEKDAY(A2, 2)",
+        "explains_en": "1 for Monday through 7 for Sunday.",
+        "explains_ro": "1 pentru luni până la 7 pentru duminică."
+      },
+      "related": [
+        "networkdays",
+        "day",
+        "text"
+      ]
+    },
+    {
+      "id": "workday",
+      "name": "WORKDAY",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "WORKDAY(start_date, days, [holidays])",
+      "description_en": "Returns the date a number of working days after a start date.",
+      "description_ro": "Returnează data aflată la un număr de zile lucrătoare după o dată de început.",
+      "keywords": [
+        "add working days",
+        "deadline",
+        "due date",
+        "business days after",
+        "delivery date",
+        "adauga zile lucratoare",
+        "termen limita",
+        "data scadenta",
+        "peste n zile lucratoare"
+      ],
+      "example": {
+        "formula": "=WORKDAY(A2, 10)",
+        "explains_en": "The date 10 working days after A2.",
+        "explains_ro": "Data aflată la 10 zile lucrătoare după A2."
+      },
+      "related": [
+        "networkdays",
+        "edate",
+        "today"
+      ]
+    },
+    {
+      "id": "year",
+      "name": "YEAR",
+      "name_ro": null,
+      "category": "date",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "YEAR(date)",
+      "description_en": "Returns the year of a date.",
+      "description_ro": "Returnează anul dintr-o dată.",
+      "keywords": [
+        "year",
+        "extract year",
+        "which year",
+        "year from date",
+        "an",
+        "anul",
+        "extrage anul",
+        "din ce an"
+      ],
+      "example": {
+        "formula": "=YEAR(A2)",
+        "explains_en": "The year part of the date in A2.",
+        "explains_ro": "Anul din data aflată în A2."
+      },
+      "related": [
+        "month",
+        "day",
+        "date"
+      ]
+    },
+    {
+      "id": "and",
+      "name": "AND",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "AND(condition1, [condition2], ...)",
+      "description_en": "TRUE only when every condition is true.",
+      "description_ro": "ADEVĂRAT doar când toate condițiile sunt adevărate.",
+      "keywords": [
+        "and",
+        "both",
+        "all conditions",
+        "every condition",
+        "si",
+        "ambele",
+        "toate conditiile",
+        "in acelasi timp"
+      ],
+      "example": {
+        "formula": "=IF(AND(B2>100, C2=\"Yes\"), \"OK\", \"No\")",
+        "explains_en": "OK only when B2 is over 100 AND C2 is \"Yes\".",
+        "explains_ro": "OK doar dacă B2 > 100 ȘI C2 este \"Yes\"."
+      },
+      "related": [
+        "or",
+        "not",
+        "if",
+        "ifs"
+      ]
+    },
+    {
+      "id": "if",
+      "name": "IF",
+      "name_ro": "DACĂ",
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "IF(logical_test, value_if_true, value_if_false)",
+      "description_en": "Returns one value if a condition is true and another if false.",
+      "description_ro": "Returnează o valoare dacă condiția este adevărată și alta dacă este falsă.",
+      "keywords": [
+        "if",
+        "condition",
+        "if then else",
+        "conditional",
+        "daca",
+        "conditie",
+        "daca atunci",
+        "if greater than",
+        "daca mai mare",
+        "return based on condition",
+        "if pass fail",
+        "daca trece sau pica"
+      ],
+      "example": {
+        "formula": "=IF(B2>=50, \"Pass\", \"Fail\")",
+        "explains_en": "\"Pass\" if B2>=50, else \"Fail\".",
+        "explains_ro": "\"Pass\" dacă B2>=50, altfel \"Fail\"."
+      },
+      "related": [
+        "ifs",
+        "iferror",
+        "and",
+        "or"
+      ]
+    },
+    {
+      "id": "iferror",
+      "name": "IFERROR",
+      "name_ro": "DACĂ.EROARE",
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "IFERROR(value, value_if_error)",
+      "description_en": "Returns a fallback value when a formula produces an error.",
+      "description_ro": "Returnează o valoare alternativă când o formulă produce o eroare.",
+      "keywords": [
+        "if error",
+        "handle error",
+        "hide error",
+        "avoid n/a",
+        "daca eroare",
+        "ascunde eroare",
+        "trateaza eroare",
+        "replace error with blank",
+        "inlocuieste eroare",
+        "hide #n/a",
+        "hide div/0"
+      ],
+      "example": {
+        "formula": "=IFERROR(VLOOKUP(D2,A:B,2,FALSE), \"Not found\")",
+        "explains_en": "Shows \"Not found\" instead of an error.",
+        "explains_ro": "Afișează \"Not found\" în loc de eroare."
+      },
+      "related": [
+        "if",
+        "vlookup",
+        "xlookup"
+      ]
+    },
+    {
+      "id": "ifna",
+      "name": "IFNA",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "IFNA(value, value_if_na)",
+      "description_en": "Returns a fallback only when a formula gives #N/A.",
+      "description_ro": "Returnează o valoare alternativă doar când formula dă #N/A.",
+      "keywords": [
+        "ifna",
+        "not found",
+        "hide na",
+        "lookup failed",
+        "no match",
+        "daca nd",
+        "negasit",
+        "ascunde na",
+        "cautare esuata"
+      ],
+      "example": {
+        "formula": "=IFNA(VLOOKUP(D2, A2:B100, 2, FALSE), \"Not found\")",
+        "explains_en": "Shows \"Not found\" instead of #N/A.",
+        "explains_ro": "Afișează \"Not found\" în loc de #N/A."
+      },
+      "related": [
+        "iferror",
+        "vlookup",
+        "xlookup"
+      ]
+    },
+    {
+      "id": "ifs",
+      "name": "IFS",
+      "name_ro": "DACĂ.MULTIPLE",
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "IFS(condition1, value1, [condition2, value2], ...)",
+      "description_en": "Checks multiple conditions and returns the value for the first true one.",
+      "description_ro": "Verifică mai multe condiții și returnează valoarea primei condiții adevărate.",
+      "keywords": [
+        "multiple ifs",
+        "nested if replacement",
+        "several conditions",
+        "grade bands",
+        "daca multiple",
+        "mai multe conditii daca",
+        "if elseif",
+        "categorii pe intervale"
+      ],
+      "example": {
+        "formula": "=IFS(B2>=90,\"A\", B2>=80,\"B\", B2>=70,\"C\", TRUE,\"F\")",
+        "explains_en": "Assigns a letter grade by score bands.",
+        "explains_ro": "Atribuie o notă literală pe intervale de scor."
+      },
+      "related": [
+        "if",
+        "switch"
+      ]
+    },
+    {
+      "id": "isblank",
+      "name": "ISBLANK",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "ISBLANK(value)",
+      "description_en": "TRUE when a cell is empty.",
+      "description_ro": "ADEVĂRAT când o celulă este goală.",
+      "keywords": [
+        "is blank",
+        "is empty",
+        "empty check",
+        "missing",
+        "este gol",
+        "celula goala",
+        "verifica gol",
+        "lipseste"
+      ],
+      "example": {
+        "formula": "=IF(ISBLANK(B2), \"Missing\", \"OK\")",
+        "explains_en": "Flags empty cells.",
+        "explains_ro": "Marchează celulele goale."
+      },
+      "related": [
+        "countblank",
+        "if",
+        "iferror"
+      ]
+    },
+    {
+      "id": "isnumber",
+      "name": "ISNUMBER",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "ISNUMBER(value)",
+      "description_en": "TRUE when a value is a number.",
+      "description_ro": "ADEVĂRAT când o valoare este număr.",
+      "keywords": [
+        "is number",
+        "is numeric",
+        "check number",
+        "validate number",
+        "este numar",
+        "verifica numar",
+        "numeric",
+        "verifica daca e numar",
+        "test numeric",
+        "contine numar",
+        "validare numar"
+      ],
+      "example": {
+        "formula": "=IF(ISNUMBER(B2), \"OK\", \"Not a number\")",
+        "explains_en": "Checks whether B2 holds a number.",
+        "explains_ro": "Verifică dacă B2 conține un număr."
+      },
+      "related": [
+        "isblank",
+        "value",
+        "iferror"
+      ]
+    },
+    {
+      "id": "let",
+      "name": "LET",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "LET(name1, value1, [name2, value2], ..., calculation)",
+      "description_en": "Names a value once so a long formula can reuse it instead of repeating it.",
+      "description_ro": "Denumește o valoare o singură dată, ca o formulă lungă să o refolosească în loc să o repete.",
+      "keywords": [
+        "let",
+        "name a value",
+        "variable in a formula",
+        "avoid repeating",
+        "shorten long formula",
+        "reuse calculation",
+        "variabila in formula",
+        "denumeste o valoare",
+        "evita repetarea",
+        "scurteaza formula"
+      ],
+      "example": {
+        "formula": "=LET(total, SUM(B2:B100), IF(total>1000, total*0.9, total))",
+        "explains_en": "Calculates the total once and uses it twice.",
+        "explains_ro": "Calculează totalul o singură dată și îl folosește de două ori."
+      },
+      "related": [
+        "if",
+        "iferror",
+        "sum"
+      ]
+    },
+    {
+      "id": "not",
+      "name": "NOT",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "NOT(condition)",
+      "description_en": "Reverses a condition: true becomes false.",
+      "description_ro": "Inversează o condiție: adevărat devine fals.",
+      "keywords": [
+        "not",
+        "opposite",
+        "reverse",
+        "is not",
+        "negate",
+        "nu",
+        "invers",
+        "nu este",
+        "negare"
+      ],
+      "example": {
+        "formula": "=IF(NOT(B2=\"Done\"), \"Pending\", \"Finished\")",
+        "explains_en": "Pending unless B2 is \"Done\".",
+        "explains_ro": "În așteptare dacă B2 nu este \"Done\"."
+      },
+      "related": [
+        "and",
+        "or",
+        "if"
+      ]
+    },
+    {
+      "id": "or",
+      "name": "OR",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "OR(condition1, [condition2], ...)",
+      "description_en": "TRUE when at least one condition is true.",
+      "description_ro": "ADEVĂRAT când cel puțin o condiție este adevărată.",
+      "keywords": [
+        "or",
+        "either",
+        "any condition",
+        "at least one",
+        "sau",
+        "oricare",
+        "cel putin una",
+        "una dintre"
+      ],
+      "example": {
+        "formula": "=IF(OR(B2>100, C2=\"Yes\"), \"OK\", \"No\")",
+        "explains_en": "OK when B2 is over 100 OR C2 is \"Yes\".",
+        "explains_ro": "OK dacă B2 > 100 SAU C2 este \"Yes\"."
+      },
+      "related": [
+        "and",
+        "not",
+        "if"
+      ]
+    },
+    {
+      "id": "switch",
+      "name": "SWITCH",
+      "name_ro": null,
+      "category": "logical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SWITCH(expression, value1, result1, [value2, result2], ..., [default])",
+      "description_en": "Compares one value against a list and returns the matching result.",
+      "description_ro": "Compară o valoare cu o listă și returnează rezultatul potrivit.",
+      "keywords": [
+        "switch",
+        "translate values",
+        "map values",
+        "case",
+        "lookup small list",
+        "traduce valori",
+        "mapare",
+        "caz",
+        "inlocuieste valori"
+      ],
+      "example": {
+        "formula": "=SWITCH(B2, \"S\", \"Small\", \"M\", \"Medium\", \"Unknown\")",
+        "explains_en": "Turns codes into labels, with a fallback.",
+        "explains_ro": "Transformă codurile în etichete, cu o valoare implicită."
+      },
+      "related": [
+        "ifs",
+        "if",
+        "vlookup"
+      ]
+    },
+    {
+      "id": "choose",
+      "name": "CHOOSE",
+      "name_ro": null,
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "CHOOSE(index, value1, [value2], ...)",
+      "description_en": "Returns one item from a list, picked by its position number.",
+      "description_ro": "Returnează un element dintr-o listă, ales după numărul poziției sale.",
+      "keywords": [
+        "choose",
+        "pick by number",
+        "nth option",
+        "select from list",
+        "month name from number",
+        "alege dupa numar",
+        "selecteaza din lista",
+        "a n-a optiune",
+        "dupa pozitie"
+      ],
+      "example": {
+        "formula": "=CHOOSE(B2, \"Low\", \"Medium\", \"High\")",
+        "explains_en": "Turns 1, 2 or 3 in B2 into a label.",
+        "explains_ro": "Transformă 1, 2 sau 3 din B2 într-o etichetă."
+      },
+      "related": [
+        "switch",
+        "index",
+        "ifs"
+      ]
+    },
+    {
+      "id": "hlookup",
+      "name": "HLOOKUP",
+      "name_ro": "CĂUTARE.O",
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "HLOOKUP(lookup_value, table_array, row_index_num, [range_lookup])",
+      "description_en": "Looks up a value in the first row and returns a value from another row in the same column.",
+      "description_ro": "Caută o valoare în primul rând și returnează o valoare din alt rând de pe aceeași coloană.",
+      "keywords": [
+        "hlookup",
+        "horizontal lookup",
+        "lookup across row",
+        "cautare orizontala",
+        "cauta pe rand",
+        "lookup by header",
+        "cauta in primul rand",
+        "pe orizontala",
+        "gaseste pe rand"
+      ],
+      "example": {
+        "formula": "=HLOOKUP(\"Q2\", A1:E10, 4, FALSE)",
+        "explains_en": "Finds \"Q2\" in row 1, returns value from row 4.",
+        "explains_ro": "Găsește \"Q2\" în rândul 1, returnează valoarea din rândul 4."
+      },
+      "related": [
+        "vlookup",
+        "xlookup"
+      ]
+    },
+    {
+      "id": "index",
+      "name": "INDEX",
+      "name_ro": "INDEX",
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "INDEX(array, row_num, [column_num])",
+      "description_en": "Returns the value at a given position in a range.",
+      "description_ro": "Returnează valoarea de la o poziție dată dintr-un interval.",
+      "keywords": [
+        "index",
+        "get value at position",
+        "index match",
+        "returns value at row col",
+        "valoare la pozitie",
+        "index potrivire",
+        "valoarea de la pozitia",
+        "ia elementul",
+        "dupa pozitie",
+        "din interval la pozitia",
+        "element de la indexul"
+      ],
+      "example": {
+        "formula": "=INDEX(B2:B100, MATCH(D2, A2:A100, 0))",
+        "explains_en": "INDEX/MATCH lookup: finds D2 in A, returns B.",
+        "explains_ro": "Căutare INDEX/MATCH: găsește D2 în A, returnează B."
+      },
+      "related": [
+        "match",
+        "vlookup",
+        "xlookup"
+      ]
+    },
+    {
+      "id": "indirect",
+      "name": "INDIRECT",
+      "name_ro": null,
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "INDIRECT(reference_text)",
+      "description_en": "Turns text into a real cell or sheet reference.",
+      "description_ro": "Transformă un text într-o referință reală de celulă sau de foaie.",
+      "keywords": [
+        "indirect",
+        "reference from text",
+        "sheet name in a cell",
+        "dynamic sheet reference",
+        "build reference",
+        "referinta din text",
+        "numele foii intr-o celula",
+        "referinta dinamica"
+      ],
+      "example": {
+        "formula": "=INDIRECT(\"'\" & A2 & \"'!B2\")",
+        "explains_en": "Reads B2 from whichever sheet is named in A2.",
+        "explains_ro": "Citește B2 din foaia al cărei nume se află în A2."
+      },
+      "related": [
+        "offset",
+        "index",
+        "match"
+      ]
+    },
+    {
+      "id": "match",
+      "name": "MATCH",
+      "name_ro": "POTRIVIRE",
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MATCH(lookup_value, lookup_array, [match_type])",
+      "description_en": "Returns the position of a value within a range.",
+      "description_ro": "Returnează poziția unei valori într-un interval.",
+      "keywords": [
+        "match",
+        "find position",
+        "row number of value",
+        "potrivire",
+        "gaseste pozitia",
+        "index of value",
+        "pozitia valorii",
+        "pe ce rand se afla",
+        "al catelea",
+        "cauta pozitia"
+      ],
+      "example": {
+        "formula": "=MATCH(D2, A2:A100, 0)",
+        "explains_en": "Position of D2 within A2:A100 (exact).",
+        "explains_ro": "Poziția lui D2 în A2:A100 (exact)."
+      },
+      "related": [
+        "index",
+        "xlookup"
+      ]
+    },
+    {
+      "id": "offset",
+      "name": "OFFSET",
+      "name_ro": null,
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "OFFSET(reference, rows, cols, [height], [width])",
+      "description_en": "Returns a range positioned a number of rows and columns away from a starting cell.",
+      "description_ro": "Returnează un interval aflat la un număr de rânduri și coloane față de o celulă de pornire.",
+      "keywords": [
+        "offset",
+        "move reference",
+        "dynamic range",
+        "rolling last rows",
+        "shift range",
+        "deplaseaza referinta",
+        "interval dinamic",
+        "muta cu randuri",
+        "ultimele randuri"
+      ],
+      "example": {
+        "formula": "=SUM(OFFSET(B2, 0, 0, 12, 1))",
+        "explains_en": "Sums the twelve cells starting at B2 — a rolling window.",
+        "explains_ro": "Adună cele douăsprezece celule începând de la B2 — o fereastră mobilă."
+      },
+      "related": [
+        "index",
+        "indirect",
+        "sum"
+      ]
+    },
+    {
+      "id": "vlookup",
+      "name": "VLOOKUP",
+      "name_ro": "CĂUTARE.V",
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])",
+      "description_en": "Looks up a value in the first column of a range and returns a value from another column in the same row.",
+      "description_ro": "Caută o valoare în prima coloană a unui interval și returnează o valoare din altă coloană de pe același rând.",
+      "keywords": [
+        "vlookup",
+        "lookup",
+        "find value",
+        "look up price",
+        "search by id",
+        "cauta valoare",
+        "cautare",
+        "gaseste pret dupa nume",
+        "lookup by name",
+        "cauta dupa",
+        "find matching row",
+        "lookup a value in a column",
+        "cauta valoarea in coloana"
+      ],
+      "example": {
+        "formula": "=VLOOKUP(D2, A2:B100, 2, FALSE)",
+        "explains_en": "Finds D2 in column A, returns matching value from column B.",
+        "explains_ro": "Găsește D2 în coloana A, returnează valoarea din coloana B."
+      },
+      "related": [
+        "xlookup",
+        "hlookup",
+        "index",
+        "match"
+      ]
+    },
+    {
+      "id": "xlookup",
+      "name": "XLOOKUP",
+      "name_ro": "CĂUTARE.X",
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])",
+      "description_en": "Modern lookup that searches an array and returns a matching value; can look left or right and handle not-found.",
+      "description_ro": "Căutare modernă care caută într-un vector și returnează valoarea potrivită; poate căuta în ambele direcții și trata cazul negăsit.",
+      "keywords": [
+        "xlookup",
+        "modern lookup",
+        "lookup left",
+        "better vlookup",
+        "cautare x",
+        "cautare moderna",
+        "lookup with default",
+        "cauta si returneaza",
+        "lookup return array",
+        "cauta valoare",
+        "cauta dupa nume",
+        "gaseste valoarea"
+      ],
+      "example": {
+        "formula": "=XLOOKUP(D2, A2:A100, B2:B100, \"Not found\")",
+        "explains_en": "Finds D2 in A, returns B; \"Not found\" if missing.",
+        "explains_ro": "Găsește D2 în A, returnează B; \"Not found\" dacă lipsește."
+      },
+      "related": [
+        "vlookup",
+        "index",
+        "match"
+      ]
+    },
+    {
+      "id": "xmatch",
+      "name": "XMATCH",
+      "name_ro": null,
+      "category": "lookup",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "XMATCH(lookup_value, lookup_array, [match_mode])",
+      "description_en": "Returns the position of a value, the modern replacement for MATCH.",
+      "description_ro": "Returnează poziția unei valori, înlocuitorul modern pentru MATCH.",
+      "keywords": [
+        "xmatch",
+        "position of value",
+        "modern match",
+        "find position",
+        "pozitia valorii",
+        "potrivire moderna",
+        "pozitia moderna",
+        "gaseste pozitia valorii",
+        "potrivire",
+        "cauta indexul",
+        "al catelea element"
+      ],
+      "example": {
+        "formula": "=XMATCH(D2, A2:A100)",
+        "explains_en": "Where D2 sits inside A2:A100.",
+        "explains_ro": "Unde se află D2 în A2:A100."
+      },
+      "related": [
+        "match",
+        "xlookup",
+        "index"
+      ]
+    },
+    {
+      "id": "abs",
+      "name": "ABS",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "ABS(number)",
+      "description_en": "Returns a number without its sign.",
+      "description_ro": "Returnează un număr fără semn (valoarea absolută).",
+      "keywords": [
+        "absolute",
+        "absolute value",
+        "without sign",
+        "positive",
+        "modul",
+        "valoare absoluta",
+        "fara semn",
+        "pozitiv"
+      ],
+      "example": {
+        "formula": "=ABS(B2)",
+        "explains_en": "B2 without its minus sign.",
+        "explains_ro": "B2 fără semnul minus."
+      },
+      "related": [
+        "round",
+        "int"
+      ]
+    },
+    {
+      "id": "int",
+      "name": "INT",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "INT(number)",
+      "description_en": "Rounds a number down to the nearest whole number.",
+      "description_ro": "Rotunjește un număr în jos la cel mai apropiat întreg.",
+      "keywords": [
+        "integer",
+        "whole number",
+        "round down",
+        "truncate",
+        "intreg",
+        "numar intreg",
+        "parte intreaga",
+        "rotunjire in jos"
+      ],
+      "example": {
+        "formula": "=INT(B2)",
+        "explains_en": "The whole-number part of B2.",
+        "explains_ro": "Partea întreagă din B2."
+      },
+      "related": [
+        "round",
+        "roundup",
+        "rounddown"
+      ]
+    },
+    {
+      "id": "mod",
+      "name": "MOD",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MOD(number, divisor)",
+      "description_en": "Returns the remainder after a division.",
+      "description_ro": "Returnează restul unei împărțiri.",
+      "keywords": [
+        "remainder",
+        "modulo",
+        "mod",
+        "divisible",
+        "even odd",
+        "rest",
+        "restul impartirii",
+        "modulo",
+        "divizibil",
+        "par impar"
+      ],
+      "example": {
+        "formula": "=MOD(B2, 2)",
+        "explains_en": "0 when B2 is even, 1 when it is odd.",
+        "explains_ro": "0 dacă B2 este par, 1 dacă este impar."
+      },
+      "related": [
+        "int"
+      ]
+    },
+    {
+      "id": "power",
+      "name": "POWER",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "POWER(base, exponent)",
+      "description_en": "Raises a number to a power.",
+      "description_ro": "Ridică un număr la o putere.",
+      "keywords": [
+        "power",
+        "exponent",
+        "raised to",
+        "squared",
+        "cubed",
+        "putere",
+        "ridicat la",
+        "la patrat",
+        "exponent"
+      ],
+      "example": {
+        "formula": "=POWER(B2, 2)",
+        "explains_en": "B2 squared.",
+        "explains_ro": "B2 la puterea a doua."
+      },
+      "related": [
+        "sqrt",
+        "product"
+      ]
+    },
+    {
+      "id": "product",
+      "name": "PRODUCT",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "PRODUCT(number1, [number2], ...)",
+      "description_en": "Multiplies all the numbers in a range.",
+      "description_ro": "Înmulțește toate numerele dintr-un interval.",
+      "keywords": [
+        "multiply",
+        "times",
+        "multiplication",
+        "inmultire",
+        "inmulteste",
+        "ori",
+        "produsul numerelor",
+        "multiply all",
+        "inmulteste toate",
+        "inmultirea valorilor",
+        "produs al numerelor",
+        "multiply range"
+      ],
+      "example": {
+        "formula": "=PRODUCT(B2:B100)",
+        "explains_en": "All values in B2:B100 multiplied together.",
+        "explains_ro": "Toate valorile din B2:B100 înmulțite."
+      },
+      "related": [
+        "sumproduct",
+        "sum"
+      ]
+    },
+    {
+      "id": "round",
+      "name": "ROUND",
+      "name_ro": "ROTUNJIRE",
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "ROUND(number, num_digits)",
+      "description_en": "Rounds a number to a specified number of digits.",
+      "description_ro": "Rotunjește un număr la un număr specificat de zecimale.",
+      "keywords": [
+        "round",
+        "round to decimals",
+        "round number",
+        "rotunjire",
+        "rotunjeste",
+        "doua zecimale",
+        "round to 2 decimals",
+        "rotunjire la zecimale"
+      ],
+      "example": {
+        "formula": "=ROUND(B2, 2)",
+        "explains_en": "Rounds B2 to 2 decimals.",
+        "explains_ro": "Rotunjește B2 la 2 zecimale."
+      },
+      "related": [
+        "roundup",
+        "rounddown",
+        "int"
+      ]
+    },
+    {
+      "id": "rounddown",
+      "name": "ROUNDDOWN",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "ROUNDDOWN(number, digits)",
+      "description_en": "Rounds a number down, toward zero.",
+      "description_ro": "Rotunjește un număr în jos, spre zero.",
+      "keywords": [
+        "round down",
+        "floor",
+        "always down",
+        "rotunjire in jos",
+        "in jos",
+        "rotunjeste in jos",
+        "rotunjire in minus",
+        "spre zero",
+        "trunchiaza"
+      ],
+      "example": {
+        "formula": "=ROUNDDOWN(B2, 2)",
+        "explains_en": "B2 rounded down to 2 decimals.",
+        "explains_ro": "B2 rotunjit în jos la 2 zecimale."
+      },
+      "related": [
+        "round",
+        "roundup",
+        "int"
+      ]
+    },
+    {
+      "id": "roundup",
+      "name": "ROUNDUP",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "ROUNDUP(number, digits)",
+      "description_en": "Rounds a number up, away from zero.",
+      "description_ro": "Rotunjește un număr în sus, departe de zero.",
+      "keywords": [
+        "round up",
+        "ceiling",
+        "always up",
+        "rotunjire in sus",
+        "in sus",
+        "supraunitar",
+        "rotunjeste in sus",
+        "rotunjire in plus",
+        "mereu in sus",
+        "supraevalueaza",
+        "in sus la zecimale"
+      ],
+      "example": {
+        "formula": "=ROUNDUP(B2, 2)",
+        "explains_en": "B2 rounded up to 2 decimals.",
+        "explains_ro": "B2 rotunjit în sus la 2 zecimale."
+      },
+      "related": [
+        "round",
+        "rounddown",
+        "int"
+      ]
+    },
+    {
+      "id": "sqrt",
+      "name": "SQRT",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SQRT(number)",
+      "description_en": "Returns the square root of a number.",
+      "description_ro": "Returnează rădăcina pătrată a unui număr.",
+      "keywords": [
+        "square root",
+        "root",
+        "radical",
+        "radacina patrata",
+        "radacina",
+        "calculeaza radacina",
+        "radical din",
+        "radacina din numar",
+        "sub radical"
+      ],
+      "example": {
+        "formula": "=SQRT(B2)",
+        "explains_en": "The square root of B2.",
+        "explains_ro": "Rădăcina pătrată din B2."
+      },
+      "related": [
+        "power"
+      ]
+    },
+    {
+      "id": "subtotal",
+      "name": "SUBTOTAL",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SUBTOTAL(function_num, range)",
+      "description_en": "Sums or counts a range while ignoring rows hidden by a filter.",
+      "description_ro": "Adună sau numără un interval ignorând rândurile ascunse de un filtru.",
+      "keywords": [
+        "subtotal",
+        "sum visible cells only",
+        "ignore filtered rows",
+        "total after filter",
+        "sum only filtered",
+        "subtotal filtrat",
+        "aduna doar randurile vizibile",
+        "ignora randuri ascunse",
+        "total dupa filtrare",
+        "suma vizibila"
+      ],
+      "example": {
+        "formula": "=SUBTOTAL(109, B2:B100)",
+        "explains_en": "Sums B2:B100, skipping rows hidden by a filter (109 means SUM).",
+        "explains_ro": "Adună B2:B100, sărind rândurile ascunse de filtru (109 înseamnă SUM)."
+      },
+      "related": [
+        "sum",
+        "sumif",
+        "filter"
+      ]
+    },
+    {
+      "id": "sum",
+      "name": "SUM",
+      "name_ro": "SUMĂ",
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SUM(number1, [number2], ...)",
+      "description_en": "Adds up all numbers in a range or list of values.",
+      "description_ro": "Adună toate numerele dintr-un interval sau listă de valori.",
+      "keywords": [
+        "sum",
+        "add",
+        "total",
+        "add up",
+        "addition",
+        "aduna",
+        "adauga",
+        "total",
+        "suma",
+        "insumare",
+        "adunare",
+        "plus",
+        "sum of column",
+        "suma coloanei"
+      ],
+      "example": {
+        "formula": "=SUM(B2:B100)",
+        "explains_en": "Total of all values in B2:B100.",
+        "explains_ro": "Totalul tuturor valorilor din B2:B100."
+      },
+      "related": [
+        "sumif",
+        "sumifs"
+      ]
+    },
+    {
+      "id": "sumif",
+      "name": "SUMIF",
+      "name_ro": "SUMĂ.DACĂ",
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SUMIF(range, criterion, [sum_range])",
+      "description_en": "Sums the values that meet a single condition.",
+      "description_ro": "Adună valorile care îndeplinesc o singură condiție.",
+      "keywords": [
+        "sum if",
+        "conditional sum",
+        "sum where",
+        "sum based on condition",
+        "total if",
+        "aduna daca",
+        "suma conditionata",
+        "suma daca",
+        "total daca",
+        "sum where equals",
+        "suma unde",
+        "sum by category",
+        "suma pe categorie"
+      ],
+      "example": {
+        "formula": "=SUMIF(A2:A100, \"Chișinău\", B2:B100)",
+        "explains_en": "Sums B where A equals \"Chișinău\".",
+        "explains_ro": "Adună B acolo unde A este egal cu \"Chișinău\"."
+      },
+      "related": [
+        "sumifs",
+        "sum",
+        "countif"
+      ]
+    },
+    {
+      "id": "sumifs",
+      "name": "SUMIFS",
+      "name_ro": "SUMĂ.DACĂ.MULTIPLE",
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SUMIFS(sum_range, criteria_range1, criterion1, [criteria_range2, criterion2], ...)",
+      "description_en": "Sums values that meet multiple conditions.",
+      "description_ro": "Adună valorile care îndeplinesc mai multe condiții simultan.",
+      "keywords": [
+        "sum multiple conditions",
+        "sum with two conditions",
+        "conditional sum multiple",
+        "total where and",
+        "aduna cu mai multe conditii",
+        "suma conditii multiple",
+        "sum where and",
+        "suma daca mai multe",
+        "total multiple criteria"
+      ],
+      "example": {
+        "formula": "=SUMIFS(C2:C100, A2:A100, \"Chișinău\", B2:B100, \">100\")",
+        "explains_en": "Sums C where A = city AND B > 100.",
+        "explains_ro": "Adună C acolo unde A = oraș ȘI B > 100."
+      },
+      "related": [
+        "sumif",
+        "sum",
+        "countifs"
+      ]
+    },
+    {
+      "id": "sumproduct",
+      "name": "SUMPRODUCT",
+      "name_ro": null,
+      "category": "math",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SUMPRODUCT(array1, [array2], ...)",
+      "description_en": "Multiplies matching values from two ranges and adds up the results.",
+      "description_ro": "Înmulțește valorile corespondente din două intervale și adună rezultatele.",
+      "keywords": [
+        "sumproduct",
+        "quantity times price",
+        "weighted total",
+        "line totals",
+        "multiply and sum",
+        "suma produselor",
+        "cantitate ori pret",
+        "total ponderat",
+        "inmulteste si aduna"
+      ],
+      "example": {
+        "formula": "=SUMPRODUCT(B2:B100, C2:C100)",
+        "explains_en": "Quantity times price for every row, added up.",
+        "explains_ro": "Cantitatea înmulțită cu prețul pe fiecare rând, apoi însumate."
+      },
+      "related": [
+        "product",
+        "sum",
+        "sumifs"
+      ]
+    },
+    {
+      "id": "average",
+      "name": "AVERAGE",
+      "name_ro": "MEDIE",
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "AVERAGE(number1, [number2], ...)",
+      "description_en": "Returns the arithmetic mean of the values.",
+      "description_ro": "Returnează media aritmetică a valorilor.",
+      "keywords": [
+        "average",
+        "mean",
+        "avg",
+        "medie",
+        "media",
+        "average of",
+        "media coloanei",
+        "mean value",
+        "valoare medie"
+      ],
+      "example": {
+        "formula": "=AVERAGE(B2:B100)",
+        "explains_en": "Average of B2:B100.",
+        "explains_ro": "Media valorilor B2:B100."
+      },
+      "related": [
+        "averageif",
+        "median",
+        "sum"
+      ]
+    },
+    {
+      "id": "averageif",
+      "name": "AVERAGEIF",
+      "name_ro": "MEDIE.DACĂ",
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "AVERAGEIF(range, criterion, [average_range])",
+      "description_en": "Averages values that meet a condition.",
+      "description_ro": "Calculează media valorilor care îndeplinesc o condiție.",
+      "keywords": [
+        "average if",
+        "conditional average",
+        "mean where",
+        "medie daca",
+        "media conditionata",
+        "average where",
+        "media unde",
+        "average by group"
+      ],
+      "example": {
+        "formula": "=AVERAGEIF(A2:A100, \"Active\", B2:B100)",
+        "explains_en": "Average of B where A = \"Active\".",
+        "explains_ro": "Media lui B acolo unde A = \"Active\"."
+      },
+      "related": [
+        "average",
+        "sumif"
+      ]
+    },
+    {
+      "id": "averageifs",
+      "name": "AVERAGEIFS",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "AVERAGEIFS(average_range, criteria_range1, criteria1, ...)",
+      "description_en": "Averages values that meet several conditions at once.",
+      "description_ro": "Face media valorilor care îndeplinesc mai multe condiții simultan.",
+      "keywords": [
+        "average with multiple conditions",
+        "average if several criteria",
+        "mean by two criteria",
+        "conditional average multiple",
+        "medie cu mai multe conditii",
+        "media dupa doua criterii",
+        "medie conditionata multipla",
+        "media daca mai multe",
+        "medie pe criterii",
+        "average with two conditions",
+        "medie cu doua conditii",
+        "average two criteria"
+      ],
+      "example": {
+        "formula": "=AVERAGEIFS(C2:C100, A2:A100, \"Chisinau\", B2:B100, \">100\")",
+        "explains_en": "Average of C where A is Chisinau and B is over 100.",
+        "explains_ro": "Media coloanei C acolo unde A este Chișinău și B este peste 100."
+      },
+      "related": [
+        "averageif",
+        "average",
+        "sumifs",
+        "countifs"
+      ]
+    },
+    {
+      "id": "count",
+      "name": "COUNT",
+      "name_ro": "NUMĂRARE",
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "COUNT(value1, [value2], ...)",
+      "description_en": "Counts how many cells contain numbers.",
+      "description_ro": "Numără câte celule conțin numere.",
+      "keywords": [
+        "count",
+        "count numbers",
+        "how many numbers",
+        "numara",
+        "numarare",
+        "cate numere",
+        "count cells",
+        "numara celule"
+      ],
+      "example": {
+        "formula": "=COUNT(B2:B100)",
+        "explains_en": "How many numeric cells in B2:B100.",
+        "explains_ro": "Câte celule numerice sunt în B2:B100."
+      },
+      "related": [
+        "counta",
+        "countif"
+      ]
+    },
+    {
+      "id": "counta",
+      "name": "COUNTA",
+      "name_ro": "NUMĂRARE.A",
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "COUNTA(value1, [value2], ...)",
+      "description_en": "Counts non-empty cells (numbers and text).",
+      "description_ro": "Numără celulele care nu sunt goale (numere și text).",
+      "keywords": [
+        "count non empty",
+        "count all",
+        "count filled",
+        "count text and numbers",
+        "numara nevide",
+        "numara celule pline",
+        "cate celule completate",
+        "count values"
+      ],
+      "example": {
+        "formula": "=COUNTA(A2:A100)",
+        "explains_en": "How many non-empty cells in A2:A100.",
+        "explains_ro": "Câte celule nevide sunt în A2:A100."
+      },
+      "related": [
+        "count",
+        "countif",
+        "countblank"
+      ]
+    },
+    {
+      "id": "countblank",
+      "name": "COUNTBLANK",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "COUNTBLANK(range)",
+      "description_en": "Counts the empty cells in a range.",
+      "description_ro": "Numără celulele goale dintr-un interval.",
+      "keywords": [
+        "count blank",
+        "count empty",
+        "missing values",
+        "empty cells",
+        "gaps",
+        "numara goale",
+        "celule goale",
+        "valori lipsa",
+        "goluri"
+      ],
+      "example": {
+        "formula": "=COUNTBLANK(B2:B100)",
+        "explains_en": "How many cells in B2:B100 are empty.",
+        "explains_ro": "Câte celule din B2:B100 sunt goale."
+      },
+      "related": [
+        "counta",
+        "count",
+        "isblank"
+      ]
+    },
+    {
+      "id": "countif",
+      "name": "COUNTIF",
+      "name_ro": "NUMĂRARE.DACĂ",
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "COUNTIF(range, criterion)",
+      "description_en": "Counts cells that meet a single condition.",
+      "description_ro": "Numără celulele care îndeplinesc o singură condiție.",
+      "keywords": [
+        "count if",
+        "count where",
+        "count how many greater than",
+        "count occurrences",
+        "numara daca",
+        "cate ori apare",
+        "numara mai mare decat",
+        "count duplicates",
+        "count matching",
+        "numara unde",
+        "count bigger than 100",
+        "numara mai mare de 100"
+      ],
+      "example": {
+        "formula": "=COUNTIF(B2:B100, \">100\")",
+        "explains_en": "Counts cells in B greater than 100.",
+        "explains_ro": "Numără celulele din B mai mari decât 100."
+      },
+      "related": [
+        "countifs",
+        "counta",
+        "sumif"
+      ]
+    },
+    {
+      "id": "countifs",
+      "name": "COUNTIFS",
+      "name_ro": "NUMĂRARE.DACĂ.MULTIPLE",
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "COUNTIFS(criteria_range1, criterion1, [criteria_range2, criterion2], ...)",
+      "description_en": "Counts cells that meet multiple conditions.",
+      "description_ro": "Numără celulele care îndeplinesc mai multe condiții.",
+      "keywords": [
+        "count multiple conditions",
+        "count where and",
+        "count two criteria",
+        "numara conditii multiple",
+        "numara cu mai multe conditii",
+        "count matching several",
+        "numara dupa mai multe conditii",
+        "numara cu conditii multiple",
+        "cate randuri indeplinesc",
+        "numarare multipla",
+        "conditii multiple"
+      ],
+      "example": {
+        "formula": "=COUNTIFS(A2:A100, \"Chișinău\", B2:B100, \">100\")",
+        "explains_en": "Counts rows where A = city AND B > 100.",
+        "explains_ro": "Numără rândurile unde A = oraș ȘI B > 100."
+      },
+      "related": [
+        "countif",
+        "sumifs"
+      ]
+    },
+    {
+      "id": "large",
+      "name": "LARGE",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "LARGE(range, k)",
+      "description_en": "Returns the k-th largest value in a range.",
+      "description_ro": "Returnează a k-a cea mai mare valoare dintr-un interval.",
+      "keywords": [
+        "nth largest",
+        "second highest",
+        "third biggest",
+        "top n",
+        "k-th largest",
+        "a doua cea mai mare",
+        "al treilea cel mai mare",
+        "primele n",
+        "top n"
+      ],
+      "example": {
+        "formula": "=LARGE(B2:B100, 2)",
+        "explains_en": "The second-largest value in B2:B100.",
+        "explains_ro": "A doua cea mai mare valoare din B2:B100."
+      },
+      "related": [
+        "max",
+        "small",
+        "rank"
+      ]
+    },
+    {
+      "id": "max",
+      "name": "MAX",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MAX(number1, [number2], ...)",
+      "description_en": "Returns the largest value in a range.",
+      "description_ro": "Returnează cea mai mare valoare dintr-un interval.",
+      "keywords": [
+        "max",
+        "maximum",
+        "largest",
+        "highest",
+        "biggest",
+        "top value",
+        "peak",
+        "maxim",
+        "maximul",
+        "cel mai mare",
+        "cea mai mare",
+        "valoare maxima"
+      ],
+      "example": {
+        "formula": "=MAX(B2:B100)",
+        "explains_en": "The largest value in B2:B100.",
+        "explains_ro": "Cea mai mare valoare din B2:B100."
+      },
+      "related": [
+        "min",
+        "large",
+        "average"
+      ]
+    },
+    {
+      "id": "maxifs",
+      "name": "MAXIFS",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MAXIFS(max_range, criteria_range1, criteria1, ...)",
+      "description_en": "Returns the largest value among the rows that meet the conditions.",
+      "description_ro": "Returnează cea mai mare valoare dintre rândurile care îndeplinesc condițiile.",
+      "keywords": [
+        "max with condition",
+        "highest by category",
+        "largest where",
+        "best per group",
+        "maxim cu conditie",
+        "cel mai mare pe categorie",
+        "maximul unde",
+        "valoarea maxima daca"
+      ],
+      "example": {
+        "formula": "=MAXIFS(C2:C100, A2:A100, \"Chisinau\")",
+        "explains_en": "The highest value in C for rows where A is Chisinau.",
+        "explains_ro": "Cea mai mare valoare din C pentru rândurile unde A este Chișinău."
+      },
+      "related": [
+        "max",
+        "minifs",
+        "sumifs"
+      ]
+    },
+    {
+      "id": "median",
+      "name": "MEDIAN",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MEDIAN(number1, [number2], ...)",
+      "description_en": "Returns the middle value of a set of numbers.",
+      "description_ro": "Returnează valoarea din mijloc a unui set de numere.",
+      "keywords": [
+        "median",
+        "middle value",
+        "mediana",
+        "valoarea din mijloc",
+        "valoarea mediana",
+        "la mijloc",
+        "mediana valorilor",
+        "la mijlocul sirului",
+        "valoare centrala"
+      ],
+      "example": {
+        "formula": "=MEDIAN(B2:B100)",
+        "explains_en": "The median of B2:B100.",
+        "explains_ro": "Mediana valorilor din B2:B100."
+      },
+      "related": [
+        "average"
+      ]
+    },
+    {
+      "id": "min",
+      "name": "MIN",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MIN(number1, [number2], ...)",
+      "description_en": "Returns the smallest value in a range.",
+      "description_ro": "Returnează cea mai mică valoare dintr-un interval.",
+      "keywords": [
+        "min",
+        "minimum",
+        "smallest",
+        "lowest",
+        "cheapest",
+        "minim",
+        "minimul",
+        "cel mai mic",
+        "cea mai mica",
+        "valoare minima"
+      ],
+      "example": {
+        "formula": "=MIN(B2:B100)",
+        "explains_en": "The smallest value in B2:B100.",
+        "explains_ro": "Cea mai mică valoare din B2:B100."
+      },
+      "related": [
+        "max",
+        "small",
+        "average"
+      ]
+    },
+    {
+      "id": "minifs",
+      "name": "MINIFS",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MINIFS(min_range, criteria_range1, criteria1, ...)",
+      "description_en": "Returns the smallest value among the rows that meet the conditions.",
+      "description_ro": "Returnează cea mai mică valoare dintre rândurile care îndeplinesc condițiile.",
+      "keywords": [
+        "min with condition",
+        "lowest by category",
+        "smallest where",
+        "cheapest per group",
+        "minim cu conditie",
+        "cel mai mic pe categorie",
+        "minimul unde",
+        "valoarea minima daca"
+      ],
+      "example": {
+        "formula": "=MINIFS(C2:C100, A2:A100, \"Chisinau\")",
+        "explains_en": "The lowest value in C for rows where A is Chisinau.",
+        "explains_ro": "Cea mai mică valoare din C pentru rândurile unde A este Chișinău."
+      },
+      "related": [
+        "min",
+        "maxifs",
+        "sumifs"
+      ]
+    },
+    {
+      "id": "rank",
+      "name": "RANK",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "RANK(value, range, [order])",
+      "description_en": "Returns the position of a value within a list of numbers.",
+      "description_ro": "Returnează poziția unei valori într-o listă de numere.",
+      "keywords": [
+        "rank",
+        "position in list",
+        "ranking",
+        "place",
+        "leaderboard",
+        "clasament",
+        "pozitie",
+        "loc",
+        "rang",
+        "ierarhie"
+      ],
+      "example": {
+        "formula": "=RANK(B2, B2:B100, 0)",
+        "explains_en": "Where B2 places among B2:B100, largest first.",
+        "explains_ro": "Ce loc ocupă B2 între B2:B100, de la cel mai mare."
+      },
+      "related": [
+        "large",
+        "small"
+      ]
+    },
+    {
+      "id": "small",
+      "name": "SMALL",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SMALL(range, k)",
+      "description_en": "Returns the k-th smallest value in a range.",
+      "description_ro": "Returnează a k-a cea mai mică valoare dintr-un interval.",
+      "keywords": [
+        "nth smallest",
+        "second lowest",
+        "bottom n",
+        "k-th smallest",
+        "a doua cea mai mica",
+        "ultimele n",
+        "cel mai mic al doilea",
+        "a k-a cea mai mica",
+        "cea mai mica a doua",
+        "ultimele valori",
+        "valori mici"
+      ],
+      "example": {
+        "formula": "=SMALL(B2:B100, 2)",
+        "explains_en": "The second-smallest value in B2:B100.",
+        "explains_ro": "A doua cea mai mică valoare din B2:B100."
+      },
+      "related": [
+        "min",
+        "large",
+        "rank"
+      ]
+    },
+    {
+      "id": "stdev",
+      "name": "STDEV",
+      "name_ro": null,
+      "category": "statistical",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "STDEV(number1, [number2], ...)",
+      "description_en": "Returns the standard deviation of a sample.",
+      "description_ro": "Returnează abaterea standard a unui eșantion.",
+      "keywords": [
+        "standard deviation",
+        "spread",
+        "variation",
+        "deviation",
+        "abatere standard",
+        "deviatie",
+        "imprastiere",
+        "variatie"
+      ],
+      "example": {
+        "formula": "=STDEV(B2:B100)",
+        "explains_en": "How spread out the values in B2:B100 are.",
+        "explains_ro": "Cât de împrăștiate sunt valorile din B2:B100."
+      },
+      "related": [
+        "average",
+        "median"
+      ]
+    },
+    {
+      "id": "concat_fn",
+      "name": "CONCAT",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "CONCAT(text1, [text2], ...)",
+      "description_en": "Joins text from several cells or ranges into one, with no separator.",
+      "description_ro": "Unește textul din mai multe celule sau intervale într-unul singur, fără separator.",
+      "keywords": [
+        "concat",
+        "join text",
+        "combine cells",
+        "merge text",
+        "glue strings",
+        "uneste text",
+        "combina celule",
+        "lipeste text",
+        "concateneaza",
+        "alipeste"
+      ],
+      "example": {
+        "formula": "=CONCAT(A2, B2)",
+        "explains_en": "A2 and B2 joined together.",
+        "explains_ro": "A2 și B2 unite într-un singur text."
+      },
+      "related": [
+        "concat",
+        "concatenate_amp",
+        "text"
+      ]
+    },
+    {
+      "id": "concatenate_amp",
+      "name": "CONCATENATE",
+      "name_ro": "CONCATENARE",
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "CONCATENATE(text1, [text2], ...)",
+      "description_en": "Joins several text items into one. (The & operator does the same.)",
+      "description_ro": "Unește mai multe elemente de text într-unul singur. (Operatorul & face același lucru.)",
+      "keywords": [
+        "concatenate",
+        "join",
+        "combine text",
+        "concatenare",
+        "uneste",
+        "lipeste",
+        "and operator text",
+        "combine columns"
+      ],
+      "example": {
+        "formula": "=CONCATENATE(A2, \", \", B2)",
+        "explains_en": "Joins A2 and B2 with a comma.",
+        "explains_ro": "Unește A2 și B2 cu o virgulă."
+      },
+      "related": [
+        "concat",
+        "left",
+        "right"
+      ]
+    },
+    {
+      "id": "find",
+      "name": "FIND",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "FIND(find_text, within_text, [start])",
+      "description_en": "Returns the position of one text inside another. Case-sensitive.",
+      "description_ro": "Returnează poziția unui text în alt text. Ține cont de majuscule.",
+      "keywords": [
+        "find position",
+        "where is",
+        "locate text",
+        "position of character",
+        "case sensitive",
+        "gaseste pozitia",
+        "unde se afla",
+        "pozitia caracterului"
+      ],
+      "example": {
+        "formula": "=FIND(\"@\", A2)",
+        "explains_en": "The position of the @ sign in A2.",
+        "explains_ro": "Poziția semnului @ în A2."
+      },
+      "related": [
+        "search",
+        "mid",
+        "left",
+        "substitute"
+      ]
+    },
+    {
+      "id": "left",
+      "name": "LEFT",
+      "name_ro": "STÂNGA",
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "LEFT(text, [num_chars])",
+      "description_en": "Returns the first N characters of a text string.",
+      "description_ro": "Returnează primele N caractere dintr-un text.",
+      "keywords": [
+        "left",
+        "first characters",
+        "first n letters",
+        "prefix",
+        "stanga",
+        "primele caractere",
+        "extract start",
+        "primele litere"
+      ],
+      "example": {
+        "formula": "=LEFT(A2, 3)",
+        "explains_en": "First 3 characters of A2.",
+        "explains_ro": "Primele 3 caractere din A2."
+      },
+      "related": [
+        "right",
+        "mid",
+        "concat"
+      ]
+    },
+    {
+      "id": "len",
+      "name": "LEN",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "LEN(text)",
+      "description_en": "Returns how many characters a text has.",
+      "description_ro": "Returnează câte caractere are un text.",
+      "keywords": [
+        "length",
+        "how many characters",
+        "character count",
+        "text length",
+        "size of text",
+        "lungime",
+        "cate caractere",
+        "numar de caractere",
+        "lungimea textului"
+      ],
+      "example": {
+        "formula": "=LEN(A2)",
+        "explains_en": "The number of characters in A2.",
+        "explains_ro": "Numărul de caractere din A2."
+      },
+      "related": [
+        "left",
+        "right",
+        "mid",
+        "trim"
+      ]
+    },
+    {
+      "id": "lower",
+      "name": "LOWER",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "LOWER(text)",
+      "description_en": "Converts text to small letters.",
+      "description_ro": "Transformă textul în litere mici.",
+      "keywords": [
+        "lowercase",
+        "small letters",
+        "minuscule",
+        "litere mici",
+        "scrie cu litere mici",
+        "transforma in litere mici",
+        "transforma in minuscule",
+        "fara majuscule",
+        "text cu litere mici"
+      ],
+      "example": {
+        "formula": "=LOWER(A2)",
+        "explains_en": "A2 in small letters.",
+        "explains_ro": "A2 cu litere mici."
+      },
+      "related": [
+        "upper",
+        "proper"
+      ]
+    },
+    {
+      "id": "mid",
+      "name": "MID",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "MID(text, start, length)",
+      "description_en": "Returns characters from the middle of a text, from a given position.",
+      "description_ro": "Returnează caractere din mijlocul unui text, de la o poziție dată.",
+      "keywords": [
+        "middle characters",
+        "substring",
+        "from position",
+        "extract part",
+        "din mijloc",
+        "subsir",
+        "de la pozitia",
+        "extrage parte"
+      ],
+      "example": {
+        "formula": "=MID(A2, 3, 5)",
+        "explains_en": "5 characters from A2, starting at the 3rd.",
+        "explains_ro": "5 caractere din A2, începând de la al 3-lea."
+      },
+      "related": [
+        "left",
+        "right",
+        "len",
+        "find"
+      ]
+    },
+    {
+      "id": "proper",
+      "name": "PROPER",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "PROPER(text)",
+      "description_en": "Capitalises the first letter of every word.",
+      "description_ro": "Scrie cu majusculă prima literă a fiecărui cuvânt.",
+      "keywords": [
+        "proper case",
+        "title case",
+        "capitalize names",
+        "first letter capital",
+        "prima litera mare",
+        "nume corect scrise",
+        "initiale majuscule",
+        "nume scrise corect",
+        "prima litera majuscula",
+        "capitalizeaza cuvintele",
+        "format nume"
+      ],
+      "example": {
+        "formula": "=PROPER(A2)",
+        "explains_en": "\"ana pop\" becomes \"Ana Pop\".",
+        "explains_ro": "\"ana pop\" devine \"Ana Pop\"."
+      },
+      "related": [
+        "upper",
+        "lower",
+        "trim"
+      ]
+    },
+    {
+      "id": "right",
+      "name": "RIGHT",
+      "name_ro": "DREAPTA",
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "RIGHT(text, [num_chars])",
+      "description_en": "Returns the last N characters of a text string.",
+      "description_ro": "Returnează ultimele N caractere dintr-un text.",
+      "keywords": [
+        "right",
+        "last characters",
+        "last n letters",
+        "suffix",
+        "dreapta",
+        "ultimele caractere",
+        "extract end",
+        "ultimele litere"
+      ],
+      "example": {
+        "formula": "=RIGHT(A2, 4)",
+        "explains_en": "Last 4 characters of A2.",
+        "explains_ro": "Ultimele 4 caractere din A2."
+      },
+      "related": [
+        "left",
+        "mid"
+      ]
+    },
+    {
+      "id": "search",
+      "name": "SEARCH",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SEARCH(find_text, within_text, [start])",
+      "description_en": "Like FIND, but ignores capital letters.",
+      "description_ro": "Ca FIND, dar ignoră majusculele.",
+      "keywords": [
+        "search text",
+        "contains",
+        "position ignore case",
+        "find ignoring case",
+        "cauta text",
+        "contine",
+        "pozitie ignora majuscule",
+        "cauta text ignorand majuscule",
+        "contine textul",
+        "unde apare textul",
+        "verifica daca contine",
+        "pozitia textului"
+      ],
+      "example": {
+        "formula": "=IF(ISNUMBER(SEARCH(\"srl\", A2)), \"Company\", \"Person\")",
+        "explains_en": "Checks whether A2 contains \"srl\", in any casing.",
+        "explains_ro": "Verifică dacă A2 conține \"srl\", indiferent de majuscule."
+      },
+      "related": [
+        "find",
+        "isnumber",
+        "substitute"
+      ]
+    },
+    {
+      "id": "split",
+      "name": "SPLIT",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "sheets"
+      ],
+      "syntax": "SPLIT(text, delimiter)",
+      "description_en": "Splits text into separate columns at a chosen character (Google Sheets).",
+      "description_ro": "Împarte textul în coloane separate la un caracter ales (Google Sheets).",
+      "keywords": [
+        "split text",
+        "separate columns",
+        "text to columns",
+        "divide by comma",
+        "imparte text",
+        "separa coloane",
+        "text in coloane",
+        "desparte"
+      ],
+      "example": {
+        "formula": "=SPLIT(A2, \",\")",
+        "explains_en": "Splits A2 into columns at each comma.",
+        "explains_ro": "Împarte A2 în coloane la fiecare virgulă."
+      },
+      "related": [
+        "concat",
+        "left",
+        "right",
+        "mid"
+      ]
+    },
+    {
+      "id": "substitute",
+      "name": "SUBSTITUTE",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "SUBSTITUTE(text, old_text, new_text, [instance])",
+      "description_en": "Replaces every occurrence of a piece of text with another.",
+      "description_ro": "Înlocuiește fiecare apariție a unui text cu altul.",
+      "keywords": [
+        "replace text",
+        "find and replace",
+        "substitute",
+        "swap text",
+        "remove characters",
+        "inlocuieste",
+        "inlocuire text",
+        "schimba text",
+        "sterge caractere"
+      ],
+      "example": {
+        "formula": "=SUBSTITUTE(A2, \"-\", \" \")",
+        "explains_en": "Turns every dash in A2 into a space.",
+        "explains_ro": "Transformă fiecare liniuță din A2 în spațiu."
+      },
+      "related": [
+        "trim",
+        "text"
+      ]
+    },
+    {
+      "id": "text",
+      "name": "TEXT",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "TEXT(value, format)",
+      "description_en": "Formats a number or date as text in a chosen pattern.",
+      "description_ro": "Formatează un număr sau o dată ca text, după un model ales.",
+      "keywords": [
+        "format as text",
+        "date format",
+        "number format",
+        "display as",
+        "two decimals",
+        "formateaza",
+        "format data",
+        "format numar",
+        "afiseaza ca",
+        "doua zecimale"
+      ],
+      "example": {
+        "formula": "=TEXT(A2, \"dd.mm.yyyy\")",
+        "explains_en": "Shows the date in A2 as 31.12.2026.",
+        "explains_ro": "Afișează data din A2 ca 31.12.2026."
+      },
+      "related": [
+        "value",
+        "concatenate_amp",
+        "concat"
+      ]
+    },
+    {
+      "id": "textafter",
+      "name": "TEXTAFTER",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "TEXTAFTER(text, delimiter, [instance])",
+      "description_en": "Returns the part of a text that comes after a chosen character.",
+      "description_ro": "Returnează partea din text care se află după un caracter ales.",
+      "keywords": [
+        "text after",
+        "part after the dash",
+        "everything after",
+        "domain from email",
+        "suffix",
+        "textul de dupa",
+        "partea de dupa",
+        "dupa caracterul",
+        "ce urmeaza dupa",
+        "domeniul din email",
+        "textul de dupa semnul",
+        "extrage dupa semn",
+        "after the symbol"
+      ],
+      "example": {
+        "formula": "=TEXTAFTER(A2, \"@\")",
+        "explains_en": "Everything in A2 after the @ sign — the domain of an email.",
+        "explains_ro": "Tot ce este în A2 după semnul @ — domeniul dintr-un email."
+      },
+      "related": [
+        "textbefore",
+        "right",
+        "find",
+        "textsplit"
+      ]
+    },
+    {
+      "id": "textbefore",
+      "name": "TEXTBEFORE",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "TEXTBEFORE(text, delimiter, [instance])",
+      "description_en": "Returns the part of a text that comes before a chosen character.",
+      "description_ro": "Returnează partea din text care se află înaintea unui caracter ales.",
+      "keywords": [
+        "text before",
+        "part before the dash",
+        "everything before",
+        "username from email",
+        "prefix",
+        "textul dinainte",
+        "partea de dinainte",
+        "inainte de caracter",
+        "pana la semnul"
+      ],
+      "example": {
+        "formula": "=TEXTBEFORE(A2, \"@\")",
+        "explains_en": "Everything in A2 before the @ sign — the username of an email.",
+        "explains_ro": "Tot ce este în A2 înaintea semnului @ — numele de utilizator dintr-un email."
+      },
+      "related": [
+        "textafter",
+        "left",
+        "find",
+        "textsplit"
+      ]
+    },
+    {
+      "id": "concat",
+      "name": "TEXTJOIN",
+      "name_ro": "TEXTJOIN",
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "TEXTJOIN(delimiter, ignore_empty, text1, [text2], ...)",
+      "description_en": "Joins text from multiple cells with a chosen separator, optionally skipping blanks.",
+      "description_ro": "Unește text din mai multe celule cu un separator ales, ignorând opțional celulele goale.",
+      "keywords": [
+        "join text",
+        "combine cells",
+        "concatenate",
+        "merge text",
+        "uneste text",
+        "combina celule",
+        "concateneaza",
+        "lipeste text",
+        "join with comma",
+        "uneste cu virgula",
+        "full name from first last"
+      ],
+      "example": {
+        "formula": "=TEXTJOIN(\" \", TRUE, A2, B2)",
+        "explains_en": "Joins first and last name with a space.",
+        "explains_ro": "Unește prenumele și numele cu un spațiu."
+      },
+      "related": [
+        "concatenate_amp",
+        "left",
+        "right"
+      ]
+    },
+    {
+      "id": "textsplit",
+      "name": "TEXTSPLIT",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel"
+      ],
+      "syntax": "TEXTSPLIT(text, column_delimiter, [row_delimiter])",
+      "description_en": "Splits text into separate columns at a chosen character (modern Excel).",
+      "description_ro": "Împarte textul în coloane separate la un caracter ales (Excel modern).",
+      "keywords": [
+        "split text excel",
+        "text to columns formula",
+        "separate by comma",
+        "divide text",
+        "imparte textul",
+        "separa dupa virgula",
+        "text in coloane excel",
+        "desparte textul"
+      ],
+      "example": {
+        "formula": "=TEXTSPLIT(A2, \",\")",
+        "explains_en": "Splits A2 into columns at each comma.",
+        "explains_ro": "Împarte A2 în coloane la fiecare virgulă."
+      },
+      "related": [
+        "split",
+        "textbefore",
+        "textafter",
+        "mid"
+      ]
+    },
+    {
+      "id": "trim",
+      "name": "TRIM",
+      "name_ro": "ELIMINĂSPAȚII",
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "TRIM(text)",
+      "description_en": "Removes extra spaces from text, leaving single spaces between words.",
+      "description_ro": "Elimină spațiile în plus din text, lăsând un singur spațiu între cuvinte.",
+      "keywords": [
+        "trim",
+        "remove spaces",
+        "clean spaces",
+        "elimina spatii",
+        "curata spatii",
+        "sterge spatii in plus",
+        "extra spaces",
+        "elimina spatiile",
+        "curata spatiile",
+        "fara spatii duble",
+        "spatii suplimentare"
+      ],
+      "example": {
+        "formula": "=TRIM(A2)",
+        "explains_en": "Removes extra spaces from A2.",
+        "explains_ro": "Elimină spațiile în plus din A2."
+      },
+      "related": [
+        "substitute"
+      ]
+    },
+    {
+      "id": "upper",
+      "name": "UPPER",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "UPPER(text)",
+      "description_en": "Converts text to capital letters.",
+      "description_ro": "Transformă textul în litere mari.",
+      "keywords": [
+        "uppercase",
+        "capital letters",
+        "all caps",
+        "capitalize all",
+        "majuscule",
+        "litere mari",
+        "cu majuscule",
+        "scrie cu majuscule",
+        "transforma in majuscule",
+        "text cu majuscule"
+      ],
+      "example": {
+        "formula": "=UPPER(A2)",
+        "explains_en": "A2 in capital letters.",
+        "explains_ro": "A2 cu litere mari."
+      },
+      "related": [
+        "lower",
+        "proper",
+        "trim"
+      ]
+    },
+    {
+      "id": "value",
+      "name": "VALUE",
+      "name_ro": null,
+      "category": "text",
+      "platforms": [
+        "excel",
+        "sheets"
+      ],
+      "syntax": "VALUE(text)",
+      "description_en": "Converts text that looks like a number into a real number.",
+      "description_ro": "Transformă un text care arată ca un număr într-un număr real.",
+      "keywords": [
+        "text to number",
+        "convert to number",
+        "numbers stored as text",
+        "parse number",
+        "text in numar",
+        "converteste in numar",
+        "numere ca text",
+        "converteste textul",
+        "numere stocate ca text",
+        "transforma in numar",
+        "face numar din text"
+      ],
+      "example": {
+        "formula": "=VALUE(A2)",
+        "explains_en": "Turns the text \"1250\" into the number 1250.",
+        "explains_ro": "Transformă textul \"1250\" în numărul 1250."
+      },
+      "related": [
+        "text",
+        "isnumber",
+        "trim"
+      ]
+    }
+  ]
+}

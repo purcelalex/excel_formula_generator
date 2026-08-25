@@ -1,0 +1,87 @@
+name: tests
+
+# Runs on every push and every pull request. A rules engine degrades quietly —
+# one new keyword can steal a match from an existing function with no error
+# raised — so the value here is that the suite runs whether or not anyone
+# remembers to run it.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:      # lets you run it by hand from the Actions tab
+
+jobs:
+  test:
+    name: pytest on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.12 is the floor: formula_builder.py uses backslashes inside f-string
+        # expressions, which is a syntax error before it. 3.13 is here to catch
+        # a future break early rather than on the day you upgrade.
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run the test suite
+        working-directory: backend
+        run: python -m pytest -q
+
+      - name: Check the knowledge base is valid JSON and complete
+        working-directory: backend
+        run: |
+          python - <<'PY'
+          import json
+          kb = json.load(open("data/knowledge_base.json", encoding="utf-8"))["functions"]
+          intents = json.load(open("data/intents.json", encoding="utf-8"))["intents"]
+          ids = {f["id"] for f in kb}
+          missing = sorted({i["function"] for i in intents} - ids)
+          assert not missing, f"intents reference functions absent from the catalogue: {missing}"
+          print(f"knowledge base OK — {len(kb)} functions, {len(intents)} intents")
+          PY
+
+  docker:
+    name: docker image builds
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t excel-formula-generator:ci .
+
+      # A container that builds but will not start is a deployment failure
+      # discovered at the worst moment. This catches it here instead.
+      - name: Start it and check the health endpoint
+        run: |
+          docker run -d --name efg -p 8000:8000 excel-formula-generator:ci
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/api/health > /dev/null; then
+              curl -s http://localhost:8000/api/health
+              echo
+              docker rm -f efg
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "the container never became healthy:"
+          docker logs efg
+          docker rm -f efg
+          exit 1

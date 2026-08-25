@@ -1,122 +1,150 @@
-# Formula Engine — local, no external LLM
+# Excel Formula Generator
 
-The "AI part" of the formula-generator project, built in Python with **zero
-per-request cost** and no dependency on Claude / ChatGPT APIs. It takes a plain
-text description (Romanian or English) and returns an Excel / Google Sheets
-formula, plus alternatives and an explanation.
+Generates Excel and Google Sheets formulas from a plain-language description in
+**Romanian or English**, optionally using a sample of the user's own table.
 
-## What this is (and isn't)
+**No external AI service is involved.** The engine is a local Python program: a
+knowledge base of spreadsheet functions, a retrieval step, a set of intent
+rules, and a formula compiler. There is no API key, no per-request cost, and no
+user data leaving the server.
 
-It is a **retrieval + slot-filling engine**: a searchable knowledge base of
-functions, matched semantically to the user's words, with a template-filling
-layer that produces ready-to-paste formulas for common patterns.
+```
+"aduna pretul unde orasul este Chisinau"  +  a pasted table
+                        │
+                        ▼
+        =SUMIF(A2:A4; "Chisinau"; C2:C4)
+        filtering on column A (City), sum over column C (Price)
+```
 
-It is **not** a general formula generator. It cannot invent arbitrary
-compositional formulas (e.g. `SUMIFS` nested inside `IFERROR` inside
-`ARRAYFORMULA` with the user's exact columns) for requests it has no template
-for. Those need a generative model. See "Upgrade paths" below — the retrieval
-result is exactly the grounding context such a model would use, so nothing here
-is throwaway.
+## Quick start
 
-## Files
+```bash
+cp .env.example .env
+docker compose up --build
+```
 
-| File | Purpose |
-|------|---------|
-| `knowledge_base.json` | The function catalog (seed of 30). Edit/extend this. |
-| `engine.py` | Retrieval (BM25), language/platform/locale detection, slot-filling. No deps. |
-| `demo.py` | Runs sample EN/RO queries. `python3 demo.py` |
-| `api.py` | Optional FastAPI backend: input limits, rate limit, SQLite analytics logging, admin endpoint. |
-| `requirements.txt` | Only needed for `api.py`. |
+Open <http://localhost:8000/docs> for an interactive page where every endpoint
+can be tried from the browser. See [DOCKER.md](DOCKER.md) for day-to-day use.
 
-Try it: `python3 engine.py "adună coloana B unde coloana A este un oraș"`
+Running the tests:
+
+```bash
+docker compose exec api python -m pytest -q
+```
 
 ## How it works
 
-1. **Normalize** — lowercase, strip diacritics so `sumă`, `suma`, `suma` all match.
-2. **Detect** — language (RO/EN), target platform (Excel/Sheets/any), locale.
-3. **Retrieve** — BM25 over each function's bilingual keyword + description text,
-   with a boost when a full keyword phrase appears, and an **intent layer** that
-   recognizes co-occurrence (e.g. "sum" + "where/dacă" → `SUMIF`, not plain `SUM`).
-4. **Slot-fill** — for known intents, extract columns/values and emit a filled
-   formula. Unfillable slots become `"?"` on purpose — a visible "fill this in"
-   marker rather than a silent wrong guess.
-5. **Localize output** — swaps the argument separator `,` → `;` for RO/EU locale,
-   never touching commas inside quoted strings.
+Five stages, each in its own module, each replaceable on its own.
 
-## Known limitations (by design, stated honestly)
+| Stage | Module | What it does |
+|---|---|---|
+| Ingestion | `app/ingestion/` | Pasted text or an uploaded file becomes one `ParsedTable` |
+| Language | `app/engine/language.py` | Romanian or English, Excel or Sheets, comma or semicolon |
+| Retrieval | `app/engine/retrieval.py` | BM25 over the bilingual knowledge base |
+| Intent | `app/engine/intents.py` | Which *shape* of formula is being asked for |
+| Build & render | `app/engine/builder.py`, `ast.py`, `render.py` | Columns to a formula tree, tree to text |
 
-- **Column roles.** Word order alone can't always tell the *sum* column from the
-  *criteria* column, so slot-filling may order them wrong or emit `"?"`. Fine for
-  a "here's the pattern, adjust the ranges" UX; not for blind paste.
-- **Novel compositions** fall back to a template of the top function.
-- **Romanian function-name display.** `name_ro` is filled only where verified.
-  Two things reduce how much this matters: Google Sheets always uses **English**
-  function names (only the separator localizes), and modern Excel accepts English
-  names too. Complete the `name_ro` fields from Microsoft's official localized
-  function list before relying on display names.
+### The formula is a tree, not a string
 
-## Extending to the full catalog
+`ast.py` defines nodes — `Func`, `Range`, `Text`, `Criterion` — and `render.py`
+is the only module in the codebase that produces formula text. Two consequences
+follow, and they are the reason for the design:
 
-The seed has 30 functions. To reach "all Excel + all Sheets functions", append
-entries to `knowledge_base.json` in the same shape. The highest-leverage field is
-`keywords` — put every phrase a real user (RO **and** EN) might type. Sources to
-bulk-import from: Microsoft's function list and Google's function list. Keep the
-schema identical and the engine picks new entries up with no code change.
+**Composition is possible.** Wrapping a result in `IFERROR` or nesting one
+function inside another is an operation on a tree. In string form it is text
+surgery that breaks on the first quoted comma.
 
-## Upgrade paths (when retrieval isn't enough)
+**Localisation is correct by construction.** The argument separator (`,` versus
+`;`) and string escaping live in one function. There is no path through the code
+that can emit a formula the renderer has not localised.
 
-- **Better matching, still local & free:** swap BM25 for multilingual
-  embeddings (`sentence-transformers`). Same interface; RO/EN handled natively;
-  needs a one-time model download. Wire it as an alternate `search()` backend.
-- **True generation without per-request API cost:** self-host a small
-  open-weights instruct model; feed it the top retrieved functions as context so
-  it composes correct, locale-aware formulas. Fixed hosting cost, no per-call fee.
-- **Hosted LLM for the hard 10% only:** send just the requests the local engine
-  can't fill confidently to a text LLM, behind the rate limit + daily spend cap.
-  Text-only calls are cents; this caps both cost and abuse.
+### Two entry points, one table
 
-## Pasted-table mode (description + copy-pasted cells)
+Paste and file upload both produce a `ParsedTable` and nothing else. The engine
+cannot tell which route a table came from, so a fix or a limit applied to one
+applies to both. Adding a third input later is one more adapter, not a second
+pipeline.
 
-`table_parser.py` + `formula_builder.py` add the flow where the user pastes their
-columns and a few rows. With real headers, sample values, and inferred types, the
-builder resolves which column is which and emits **real cell references** instead
-of `"?"` placeholders. Endpoint: `POST /generate_with_table {description, table}`.
+## Security
 
-Example — pasting a 4-column table and asking (in Romanian) to sum price by city
-returns `=SUMIF(A2:A4; "Chișinău"; C2:C4)`, having identified City as the criteria
-column and Price as the numeric sum column, and localized the separator to `;`.
+Full reasoning in [ARCHITECTURE.md](ARCHITECTURE.md). In short:
 
-### Security: it's validation, not antivirus (and that's correct)
+- **Formula/CSV injection** — cells beginning with `=`, `+`, `-` or `@` are
+  detected, defanged with a leading apostrophe, and reported back to the user.
+- **Uploads** — only `.xlsx` and `.csv`; the bytes must match the extension;
+  macro-bearing formats are refused by name *and* by inspecting the archive;
+  zip bombs are caught before extraction; `defusedxml` is a hard dependency;
+  files are parsed in memory and never written to disk.
+- **Honest limit** — none of the above is antivirus. Python cannot detect
+  malware. What it does is remove the conditions under which a malicious file
+  could act. ClamAV as a sidecar would add signature scanning; it is a
+  reasonable later addition, not a substitute for any check above.
+- **Admin** — PBKDF2 password hash, constant-time comparison, HMAC-signed
+  expiring session tokens. The admin routes refuse to serve until configured.
+- **Rate limiting** — per client IP, in process. `X-Forwarded-For` is ignored
+  because it is attacker-controlled unless a trusted proxy overwrites it.
 
-A copy-paste from Excel/Sheets arrives as **plain text** (usually tab-separated).
-Text can't carry a virus — nothing executes when Python parses a string — so
-antivirus scanning would be theater. The real, well-known threat is **CSV /
-formula (DDE) injection**: cells beginning with `=`, `+`, `-`, or `@`. The parser:
+## Analytics
 
-- caps chars / rows / cols / cell length (stops denial-of-service by giant paste),
-- normalizes encoding and strips control characters,
-- **detects and defangs** injection cells (prefixes them with `'` so they're
-  literal text everywhere) and reports them in `safety.injection_cells_defanged`,
-- treats every cell strictly as data, never as an instruction.
+Every request records the description, the detected language, the matched
+function and whether a formula could be built. The **unmet needs** panel —
+requests that produced no confident answer — is the point of the feature: it is
+a ranked list of what the knowledge base is missing, written by real users in
+their own words.
 
-If you later accept **uploaded `.xlsx` files** instead of paste, that IS a real
-malware surface (VBA macros) and needs actual scanning (e.g. ClamAV) plus macro
-stripping — a separate feature, flagged in the code. Paste mode avoids all of it.
+Table contents are never stored. Column count and types are, which is enough to
+understand usage and contains no personal data.
 
-### Honest limits of this mode
+## Extending it
 
-- Column-role resolution is heuristic (header fuzzy-match + type inference +
-  matching the criterion value against sample cells). It's good on clear cases and
-  can misassign on ambiguous headers — show the `rationale` and `columns` so the
-  user can correct it.
-- It fills the patterns it knows (conditional sum/count/average, lookup, plain
-  aggregates). Genuinely novel compositions still need the generative upgrade path.
+**More functions:** add entries to `backend/data/knowledge_base.json` in the
+existing shape. The highest-value field is `keywords` — every phrase a real user
+might type, in both languages. No code change is needed.
 
-## Where it fits the backend
+Two rules learned the hard way. Keep keywords *specific*: a generic word like
+"table" or "value" matches sentences that have nothing to do with the function.
+And never add a keyword that is a near-copy of a test query — that fits the data
+to the test and proves nothing.
 
-`api.py` is the integration seam for Variant A from the architecture discussion:
-one FastAPI service, `/generate` for users, `/admin/analytics` behind auth for
-you. It logs the **description + outcome** (not screenshots) to SQLite so the
-analytics menu can show most-popular inputs and unmet needs. Before launch:
-replace the bearer-token admin check with real auth, and move the in-memory rate
-limiter to Redis if you run more than one instance.
+`name_ro` is left empty on newer entries on purpose. Google Sheets uses English
+function names in every locale and modern Excel accepts them, so a missing
+localised name costs nothing while a wrong one is a real defect. Fill these from
+Microsoft's official localised function list before displaying them as
+authoritative.
+
+**More formula patterns:** add an entry to `backend/data/intents.json` and, if
+the shape is new, a builder function in `builder.py`.
+
+**Always add a test.** Two files, for the two halves:
+
+- `backend/tests/retrieval.json` — description to the function that must rank
+  first. Add a case for every function you add.
+- `backend/tests/golden.json` — description to the exact formula produced. Add a
+  case for every intent or bug fix.
+
+This is not ceremony. Expanding the catalogue from 30 to 80 functions broke two
+existing matches immediately: a new Romanian keyword for PRODUCT hijacked
+"cauta pretul dupa produs" (in Romanian, *produs* means both a multiplication
+result and a product you sell), and a generic "lookup table" keyword on VLOOKUP
+outranked SORT for "sort the table by price". Neither raised an error. Both
+were caught by a red test and fixed in the data.
+
+## Status
+
+Working: bilingual parsing, paste and upload ingestion, a knowledge base of 94
+functions, nine intents, formula building with real cell references,
+localisation, analytics, admin auth, the frontend, and 116 passing tests.
+
+**Two numbers, deliberately different.** The engine *recognises and explains*
+all 94 functions. It *builds a finished formula from your columns* for the nine
+intents in `data/intents.json` — conditional and plain sum, count and average,
+plus lookup, maximum and minimum. Everything else is returned as a pattern to
+adapt, labelled as such.
+
+**Catalogue coverage** was checked against published "most used Excel
+functions" lists rather than chosen by feel: every function named across
+excel-easy's top ten, Sheetgo's top ten for 2026 and a 30-formula roundup is
+present, Google-Sheets-only entries included.
+
+Next: more intents, so that more of the catalogue can be built rather than
+suggested — date differences and text extraction are the obvious candidates.

@@ -2,77 +2,84 @@
 
 ## First run
 
-Open PowerShell in the project folder (the one containing `formula_engine/`):
+In PowerShell, from the project folder:
 
 ```powershell
 Copy-Item .env.example .env
 docker compose up --build
 ```
 
-The first build takes a minute or two. When it finishes, open
-<http://localhost:8000/health> — you should see:
+Open <http://localhost:8000/api/health> — you should see the function and intent
+counts. Then open <http://localhost:8000/docs>, where FastAPI provides a page to
+try every endpoint from the browser.
 
-```json
-{"status": "ok", "functions_loaded": 30}
-```
+Stop with `Ctrl+C`, or `docker compose down` from another terminal.
 
-Stop it with `Ctrl+C`, or `docker compose down` from another terminal.
-
-## Everyday use
+## Everyday commands
 
 | Command | What it does |
 |---|---|
-| `docker compose up` | Start (no rebuild — use this normally) |
-| `docker compose up --build` | Rebuild, needed only after changing `requirements.txt` |
+| `docker compose up` | Start (no rebuild — the normal case) |
+| `docker compose up --build` | Rebuild; needed only after `requirements.txt` changes |
 | `docker compose down` | Stop and remove the container |
 | `docker compose logs -f` | Follow the logs |
-| `docker compose exec api bash` | Shell inside the container |
+| `docker compose exec api python -m pytest -q` | Run the test suite |
+| `docker compose exec api bash` | A shell inside the container |
 
-Editing any `.py` file in `formula_engine/` reloads the server automatically —
-no rebuild, no restart.
+Editing any file under `backend/` reloads the server automatically.
 
-## Try the API
+## Enabling the admin analytics
+
+The admin routes return **503 until configured** — an unconfigured deployment
+gets no admin access rather than a default one.
 
 ```powershell
-# Romanian, no table
-curl.exe -X POST http://localhost:8000/generate -H "Content-Type: application/json" -d '{\"description\":\"aduna coloana B unde coloana A este un oras\"}'
-
-# English, with a pasted table
-curl.exe -X POST http://localhost:8000/generate_with_table -H "Content-Type: application/json" -d '{\"description\":\"sum price where city is Chisinau\",\"table\":\"City\tName\tPrice\nChisinau\tAna\t100\nIasi\tBogdan\t200\"}'
+docker compose exec api python -m app.security.auth "choose a strong password"
 ```
 
-Easier: open <http://localhost:8000/docs> — FastAPI generates an interactive test
-page for every endpoint, and you can fill the forms in the browser.
+It prints two lines. Paste both into `.env`, then `docker compose restart api`.
+
+Log in by POSTing the password to `/api/admin/login`; it returns a token that
+expires after eight hours. Send it as `Authorization: Bearer <token>` to
+`/api/admin/analytics`. The password itself is never stored — only a PBKDF2
+hash, which cannot be reversed.
 
 ## Where the database lives
 
 `analytics.db` is **not** in your project folder. It sits on a Docker named
-volume called `excel-formula-generator_analytics`, inside Docker's own storage.
-That is deliberate: an SQLite file inside OneDrive gets synced mid-write and
-corrupts. This way OneDrive never sees it.
+volume, `excel-formula-generator_analytics`, inside Docker's own storage. An
+SQLite file inside a syncing folder gets uploaded mid-write and corrupts; this
+avoids the problem rather than working around it.
 
 ```powershell
 docker volume ls                    # list volumes
-docker compose down -v              # delete the container AND the analytics data
+docker compose down                 # stop, KEEPING the analytics data
+docker compose down -v              # stop and DELETE the analytics data
 ```
 
-Note that `down -v` wipes the analytics database. Plain `down` keeps it.
+## Trying it from the command line
 
-## No virtual environment
+```powershell
+# Romanian, no table
+curl.exe -X POST http://localhost:8000/api/generate -H "Content-Type: application/json" -d '{\"description\":\"aduna coloana B unde coloana A este un oras\"}'
 
-There is no `.venv` on your laptop and there should not be one. Python and every
-dependency live inside the image. If VS Code complains about unresolved imports,
-either install the Dev Containers extension and "Reopen in Container", or ignore
-it — the editor is looking at your laptop's Python, while the code runs in the
-container's.
+# English, with a pasted table
+curl.exe -X POST http://localhost:8000/api/generate/paste -H "Content-Type: application/json" -d '{\"description\":\"sum price where city is Chisinau\",\"table\":\"City\tName\tPrice\nChisinau\tAna\t100\nIasi\tBogdan\t200\"}'
+
+# A file upload
+curl.exe -X POST http://localhost:8000/api/generate/file -F "description=sum price where city is Chisinau" -F "file=@sample.csv"
+```
+
+The `/docs` page is easier for anything more than a quick check.
 
 ## Notes
 
-- **Python 3.12 is required.** `formula_builder.py` uses backslashes inside
-  f-string expressions, which is a syntax error on 3.11 and earlier. The image
-  pins 3.12 for this reason.
-- **`.env` is gitignored.** Never commit the real `ADMIN_TOKEN`. Generate one
-  with `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
+- **Python 3.12 or newer is required.** The image pins 3.12.
+- **`.env` is gitignored.** The admin hash and session secret belong there and
+  nowhere else.
 - **The container runs as a non-root user** (`appuser`, uid 1000).
-- **`--reload` is for development only.** The production image runs the plain
-  `CMD` in the Dockerfile, without reload.
+- **`--reload` is development only.** The production image runs the plain `CMD`
+  in the Dockerfile, without it.
+- **No `.venv` on your laptop.** If VS Code reports unresolved imports, it is
+  looking at your machine's Python while the code runs in the container's. The
+  Dev Containers extension resolves it.

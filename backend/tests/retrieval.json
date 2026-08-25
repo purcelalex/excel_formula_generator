@@ -1,0 +1,187 @@
+{
+  "_comment": [
+    "Retrieval cases: a description in, the function that must rank FIRST.",
+    "",
+    "The golden cases test formulas the engine builds. These test the other",
+    "half — whether the knowledge base still surfaces the right function as the",
+    "catalogue grows. Every new entry adds keywords that compete with existing",
+    "ones, and a stolen match produces no error, just a worse answer.",
+    "",
+    "Add a case here for every function you add, in both languages where the",
+    "wording differs. `also_expected` lists functions that must appear in the",
+    "top three but need not win — useful where two functions genuinely both fit."
+  ],
+  "cases": [
+    {
+      "description": "working days between two dates",
+      "expect": "NETWORKDAYS"
+    },
+    {
+      "description": "cate zile lucratoare au ramas",
+      "expect": "NETWORKDAYS"
+    },
+    {
+      "description": "add 10 working days to a deadline",
+      "expect": "WORKDAY"
+    },
+    {
+      "description": "ultima zi a lunii",
+      "expect": "EOMONTH"
+    },
+    {
+      "description": "adauga 3 luni la data",
+      "expect": "EDATE"
+    },
+    {
+      "description": "ce zi a saptamanii este",
+      "expect": "WEEKDAY"
+    },
+    {
+      "description": "extract the year from a date",
+      "expect": "YEAR"
+    },
+    {
+      "description": "current date and time",
+      "expect": "NOW"
+    },
+    {
+      "description": "how many characters in a name",
+      "expect": "LEN"
+    },
+    {
+      "description": "convert text to uppercase",
+      "expect": "UPPER"
+    },
+    {
+      "description": "litere mici",
+      "expect": "LOWER"
+    },
+    {
+      "description": "prima litera mare la nume",
+      "expect": "PROPER"
+    },
+    {
+      "description": "inlocuieste liniuta cu spatiu",
+      "expect": "SUBSTITUTE"
+    },
+    {
+      "description": "find the position of a character in text",
+      "expect": "FIND"
+    },
+    {
+      "description": "format the date as text",
+      "expect": "TEXT"
+    },
+    {
+      "description": "convert text to a real number",
+      "expect": "VALUE"
+    },
+    {
+      "description": "split text by comma in google sheets",
+      "expect": "SPLIT"
+    },
+    {
+      "description": "standard deviation of prices",
+      "expect": "STDEV"
+    },
+    {
+      "description": "a doua cea mai mare valoare",
+      "expect": "LARGE"
+    },
+    {
+      "description": "median value",
+      "expect": "MEDIAN"
+    },
+    {
+      "description": "count empty cells",
+      "expect": "COUNTBLANK"
+    },
+    {
+      "description": "quantity times price total",
+      "expect": "SUMPRODUCT"
+    },
+    {
+      "description": "square root of a number",
+      "expect": "SQRT"
+    },
+    {
+      "description": "restul impartirii",
+      "expect": "MOD"
+    },
+    {
+      "description": "absolute value without sign",
+      "expect": "ABS"
+    },
+    {
+      "description": "both conditions must be true",
+      "expect": "AND"
+    },
+    {
+      "description": "cel putin una dintre conditii",
+      "expect": "OR"
+    },
+    {
+      "description": "check if a cell is empty",
+      "expect": "ISBLANK"
+    },
+    {
+      "description": "sort the table by price",
+      "expect": "SORT"
+    },
+    {
+      "description": "rows to columns",
+      "expect": "TRANSPOSE"
+    },
+    {
+      "description": "sum the prices",
+      "expect": "SUM"
+    },
+    {
+      "description": "cauta pretul dupa produs",
+      "expect": "VLOOKUP",
+      "also_expected": [
+        "XLOOKUP"
+      ]
+    },
+    {
+      "description": "average with two conditions",
+      "expect": "AVERAGEIFS"
+    },
+    {
+      "description": "highest price for each category",
+      "expect": "MAXIFS"
+    },
+    {
+      "description": "sum only the visible rows after filtering",
+      "expect": "SUBTOTAL"
+    },
+    {
+      "description": "everything before the at sign in an email",
+      "expect": "TEXTBEFORE"
+    },
+    {
+      "description": "textul de dupa semnul at",
+      "expect": "TEXTAFTER"
+    },
+    {
+      "description": "pick the third option from a list",
+      "expect": "CHOOSE"
+    },
+    {
+      "description": "build a reference from a sheet name in a cell",
+      "expect": "INDIRECT"
+    },
+    {
+      "description": "import data from another spreadsheet file",
+      "expect": "IMPORTRANGE"
+    },
+    {
+      "description": "name a value so the formula does not repeat it",
+      "expect": "LET"
+    },
+    {
+      "description": "sortare dupa alta coloana",
+      "expect": "SORTBY"
+    }
+  ]
+}

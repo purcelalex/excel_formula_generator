@@ -1,0 +1,18 @@
+# The engine itself (app/engine, app/ingestion/paste.py) needs nothing beyond
+# the Python standard library. Everything below is for the web layer and for
+# reading uploaded files.
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9     # required by FastAPI to parse file uploads
+
+# Reading .xlsx uploads.
+openpyxl>=3.1
+# NOT optional: openpyxl uses defusedxml when it is installed, which is what
+# stops XML entity-expansion attacks in a malicious workbook. Removing this
+# silently weakens the upload path.
+defusedxml>=0.7
+
+# Tests.
+pytest>=8.0
+httpx>=0.27                 # FastAPI's TestClient depends on it

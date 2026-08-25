@@ -16,3 +16,7 @@ __pycache__
 docs/
 README.md
 ARCHITECTURE.md
+DOCKER.md
+frontend/
+formula_engine/
+tests/

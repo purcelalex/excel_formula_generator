@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formula Generator — PURCELALEX</title>
+<meta name="description" content="Describe what you need in Romanian or English and get the Excel or Google Sheets formula, built from your own columns.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='13' height='13' x='2' y='2' rx='2' fill='%232f9bf6'/%3E%3Crect width='13' height='13' x='17' y='2' rx='2' fill='%2300ffff'/%3E%3Crect width='13' height='13' x='2' y='17' rx='2' fill='%23f5a623'/%3E%3Crect width='13' height='13' x='17' y='17' rx='2' fill='%23e5488b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ---------------------------------------------------------------------------
+   Palette sampled from the site design so this page sits inside the existing
+   brand rather than beside it.
+--------------------------------------------------------------------------- */
+:root{
+  --bg:#07111f;
+  --bg-raise:#0d1e33;
+  --bg-raise-2:#0d2035;
+  --line:#172c45;
+  --line-soft:#122841;
+
+  --cyan:#00ffff;
+  --teal:#095e6d;
+  --teal-soft:#0b3f52;
+  --amber:#f2a65a;
+  --orange:#ff6347;
+  --orange-dark:#e5502f;
+
+  --text:#eaf1fa;
+  --text-soft:#d7e2ef;
+  --text-dim:#8fa3bd;
+
+  --radius:14px;
+  --radius-lg:20px;
+  --maxw:1240px;
+
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'Cascadia Code',Consolas,monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,textarea,select{font:inherit;color:inherit}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+
+/* ---------- header ---------- */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(7,17,31,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line-soft);
+}
+.header-inner{display:flex;align-items:center;gap:32px;height:88px}
+.site-header .btn{white-space:nowrap;padding:13px 22px}
+.logo img{display:block;height:52px;width:auto}
+.nav{display:flex;align-items:center;gap:26px;margin-left:auto}
+.nav a{white-space:nowrap}
+.nav a{font-size:15px;font-weight:500;color:var(--text-soft);transition:color .15s}
+.nav a:hover{color:var(--cyan)}
+.nav a.active{color:#fff;font-weight:600}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  border:0;border-radius:10px;cursor:pointer;font-weight:700;
+  padding:14px 26px;transition:background .15s,transform .05s,opacity .15s;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:hover{background:var(--orange-dark)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--text-soft);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-sm{padding:9px 16px;font-size:14px;border-radius:9px}
+
+/* Beta marker. Amber rather than cyan so it reads as a caution, not as another
+   navigation item, and stays legible against the dark header. */
+.beta{
+  display:inline-block;vertical-align:middle;margin-left:7px;
+  font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);border:1px solid rgba(242,166,90,.55);
+  background:rgba(242,166,90,.12);border-radius:5px;padding:2px 6px;line-height:1.4;
+}
+.beta-lg{font-size:11px;padding:3px 9px;margin-left:12px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;padding:76px 0 64px}
+.hero::after{ /* the diagonal teal wash from the design */
+  content:"";position:absolute;inset:0;left:52%;
+  background:linear-gradient(200deg,#0b3d4d 0%,#07202f 45%,var(--bg) 78%);
+  clip-path:polygon(18% 0,100% 0,100% 100%,0 100%);
+  opacity:.85;z-index:0;pointer-events:none;
+}
+.hero .wrap{position:relative;z-index:1}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:stretch}
+/* Both columns stretch to the taller one, and the left column spreads its
+   content over that height, so the two sides finish level instead of the text
+   floating in the middle of a tall card. */
+.hero-copy{display:flex;flex-direction:column;justify-content:space-between}
+
+.eyebrow{
+  color:var(--cyan);font-weight:700;font-size:13px;
+  letter-spacing:.16em;text-transform:uppercase;margin:0 0 20px;
+}
+h1{
+  margin:0 0 22px;font-size:clamp(38px,4.6vw,60px);
+  line-height:1.06;font-weight:800;letter-spacing:-.02em;
+}
+h1 .dot{color:var(--orange)}
+.lede{margin:0 0 30px;font-size:18px;color:var(--text-soft);max-width:46ch}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.hero-note{font-size:14px;color:var(--text-dim);max-width:52ch}
+.hero-lead-in{margin:0 0 26px;font-size:16.5px;color:var(--text-dim);max-width:50ch}
+.hero-lead-in b{color:var(--text);font-weight:600}
+
+.hero-points{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:14px;max-width:52ch}
+.hero-points li{display:flex;gap:13px;align-items:flex-start;font-size:15px;color:var(--text-dim)}
+.hero-points b{display:block;color:var(--text);font-weight:600;font-size:15.5px;margin-bottom:1px}
+.hero-points .mark{
+  flex:none;width:26px;height:26px;border-radius:8px;margin-top:2px;
+  background:var(--teal-soft);border:1px solid var(--teal);
+  color:var(--cyan);display:grid;place-items:center;font-size:13px;font-weight:800;
+}
+.hero-note b{color:var(--text-soft);font-weight:600}
+
+/* preview card, mirroring the "controlled preview" card in the design */
+.preview{
+  /* The card stretches to match the copy column, so its contents are centred
+     within that height. The contents are grouped into blocks and spread with
+     space-between, so the spare height is shared between the groups in
+     proportion rather than pooling above and below one centred stack. */
+  display:flex;flex-direction:column;justify-content:space-between;
+  background:linear-gradient(160deg,var(--bg-raise) 0%,var(--bg-raise-2) 100%);
+  border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:30px;box-shadow:0 24px 60px rgba(0,0,0,.45);
+}
+.preview-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:0}
+.preview-title{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-soft);font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--cyan)}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan)}
+
+.preview-q{font-size:15px;color:var(--text-dim);margin:0 0 6px}
+.preview-ro{font-size:17px;color:var(--text);margin:0 0 16px;font-style:italic}
+.preview-ro + .preview-q{margin-top:0}
+.preview-formula{
+  font-family:var(--mono);font-size:17px;color:var(--cyan);
+  background:#061826;border:1px solid var(--teal);border-radius:12px;
+  padding:20px 18px;word-break:break-all;margin-bottom:18px;
+}
+.chip + .chip{margin-top:10px}
+.pv-block > *:last-child{margin-bottom:0}
+.pv-block .mini-key{margin-bottom:0}
+.chip{
+  display:flex;align-items:center;gap:12px;
+  background:var(--teal-soft);border-radius:12px;padding:16px;
+  font-size:14px;font-weight:600;color:var(--text);
+}
+.chip .tick{
+  flex:none;width:22px;height:22px;border-radius:50%;background:var(--cyan);
+  color:#04212b;display:grid;place-items:center;font-size:13px;font-weight:800;
+}
+
+
+/* Mini spreadsheet inside the example card. It exists so the formula is not
+   abstract: the reader can see which column is A and which is C, and why the
+   engine picked them. Column A (searched) and column C (summed) are tinted to
+   match their roles in the formula below it. */
+.mini-label{
+  /* The card is a flex column now, which stretches its children; without
+     this the badge spans the full width instead of hugging its text. */
+  align-self:flex-start;
+  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:#04212b;background:var(--amber);
+  border-radius:5px;padding:3px 9px;margin-bottom:10px;
+}
+.mini-sheet{
+  width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;
+  background:#061826;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  margin-bottom:18px;
+}
+.mini-sheet th,.mini-sheet td{
+  padding:9px 11px;border-right:1px solid #14283c;border-bottom:1px solid #14283c;
+  text-align:left;white-space:nowrap;
+}
+.mini-sheet th:last-child,.mini-sheet td:last-child{border-right:0}
+.mini-sheet tr:last-child td{border-bottom:0}
+.mini-sheet .colref{
+  background:#0a2233;color:var(--text-dim);font-weight:700;text-align:center;
+  font-size:11px;width:26px;
+}
+.mini-sheet .rowref{
+  background:#0a2233;color:var(--text-dim);font-weight:700;text-align:center;
+  font-size:11px;width:26px;
+}
+.mini-sheet .hdr{color:var(--text);font-weight:700}
+.mini-sheet td{color:var(--text-soft)}
+.mini-sheet .searched{background:rgba(0,255,255,.07)}
+.mini-sheet .summed{background:rgba(242,166,90,.10)}
+.mini-key{
+  display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--text-dim);
+  margin:-8px 0 16px;
+}
+.mini-key span{display:inline-flex;align-items:center;gap:6px}
+.mini-key i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.mini-key .k-search{background:rgba(0,255,255,.35)}
+.mini-key .k-sum{background:rgba(242,166,90,.45)}
+
+/* ---------- app ---------- */
+.app{padding:26px 0 90px;scroll-margin-top:104px}
+.section-head{margin-bottom:28px}
+.section-head h2{margin:0 0 8px;font-size:28px;font-weight:700;letter-spacing:-.01em}
+.section-head p{margin:0;color:var(--text-dim)}
+
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.panel{
+  background:var(--bg-raise);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:28px;
+}
+.field{margin-bottom:22px}
+.field:last-child{margin-bottom:0}
+label.lbl{display:block;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-soft);margin-bottom:9px}
+.hint{font-size:13px;color:var(--text-dim);margin:8px 0 0}
+
+textarea,input[type=text]{
+  width:100%;background:#0a1828;border:1px solid var(--line);
+  border-radius:12px;padding:14px 16px;resize:vertical;transition:border-color .15s;
+}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--cyan)}
+textarea::placeholder{color:#5b7290}
+#tableText{font-family:var(--mono);font-size:13.5px;min-height:132px}
+#description{min-height:96px}
+
+.counter{float:right;font-size:12px;color:var(--text-dim);font-weight:500;text-transform:none;letter-spacing:0}
+
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{
+  border:1px solid var(--line);background:transparent;color:var(--text-dim);
+  border-radius:10px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;
+}
+.tab[aria-selected=true]{background:var(--teal-soft);border-color:var(--teal);color:var(--cyan)}
+
+.drop{
+  border:1.5px dashed var(--line);border-radius:12px;padding:30px 20px;text-align:center;
+  cursor:pointer;transition:border-color .15s,background .15s;background:#0a1828;
+}
+.drop:hover,.drop.over{border-color:var(--cyan);background:#0b2033}
+.drop strong{display:block;color:var(--text);margin-bottom:5px}
+.drop span{font-size:13.5px;color:var(--text-dim)}
+.filename{margin-top:12px;font-size:14px;color:var(--cyan);font-family:var(--mono);word-break:break-all}
+
+.actions{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+/* Both action buttons are one fixed width so the pair reads as a set, and the
+   row is centred in the panel. A fixed width rather than flex-grow is what lets
+   centring work — growing buttons would fill the row and have nothing to centre. */
+.actions .btn{
+  /* Equal halves of the row, so the pair is exactly as wide as the textarea
+     above them and never wider. */
+  flex:1 1 0;min-width:0;white-space:nowrap;padding-left:16px;padding-right:16px;
+}
+.actions .hint{flex:none}
+/* An empty status span still consumes a flex gap, which pushed the centred pair
+   6px off centre. Removing it from layout while it has nothing to say fixes
+   that without special-casing the centring. */
+.actions .hint:empty{display:none}
+.spinner{
+  width:17px;height:17px;border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- result ---------- */
+.result-empty{color:var(--text-dim);font-size:15px}
+.result-empty ul{margin:14px 0 0;padding-left:20px}
+.result-empty li{margin-bottom:7px}
+.result-empty code{font-family:var(--mono);font-size:13px;color:var(--text-soft)}
+
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.badge{
+  font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  border-radius:999px;padding:5px 12px;border:1px solid var(--line);color:var(--text-dim);
+}
+.badge.ok{background:rgba(0,255,255,.10);border-color:var(--teal);color:var(--cyan)}
+.badge.warn{background:rgba(242,166,90,.12);border-color:#7a5324;color:var(--amber)}
+
+.formula-box{position:relative;margin-bottom:18px}
+.formula{
+  font-family:var(--mono);font-size:18px;line-height:1.5;color:var(--cyan);
+  background:#061826;border:1px solid var(--teal);border-radius:12px;
+  padding:18px 60px 18px 18px;word-break:break-all;
+}
+.copy{
+  position:absolute;top:10px;right:10px;background:var(--teal-soft);border:1px solid var(--teal);
+  color:var(--cyan);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
+}
+.copy:hover{background:var(--teal)}
+
+.rationale{
+  background:#0a1828;border-left:3px solid var(--cyan);border-radius:0 10px 10px 0;
+  padding:13px 16px;font-size:14.5px;color:var(--text-soft);margin-bottom:20px;
+}
+
+.sub{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin:0 0 10px}
+table.cols{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:20px}
+table.cols th,table.cols td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line-soft)}
+table.cols th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);font-weight:700}
+table.cols td:first-child{font-family:var(--mono);color:var(--cyan);width:52px}
+.type{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em}
+
+.notice{
+  border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:12px;
+  background:rgba(242,166,90,.10);border:1px solid #7a5324;color:#f6c68f;
+}
+.notice.error{background:rgba(255,99,71,.12);border-color:#8a3325;color:#ffb2a1}
+
+.alt{border-top:1px solid var(--line-soft);padding-top:16px;margin-top:4px}
+.alt-item{margin-bottom:14px}
+.alt-name{font-weight:700;font-size:14.5px}
+.alt-name span{font-weight:500;color:var(--text-dim);font-size:13px;margin-left:8px}
+.alt-formula{font-family:var(--mono);font-size:13.5px;color:var(--text-soft);margin-top:4px;word-break:break-all}
+.alt-explain{font-size:13.5px;color:var(--text-dim);margin-top:3px}
+
+/* ---------- footer ---------- */
+.site-footer{border-top:1px solid var(--line-soft);padding:28px 0;color:var(--text-dim);font-size:14px}
+.footer-inner{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
+
+/* ---------- responsive ---------- */
+@media (max-width:1220px){
+  .nav{display:none}
+}
+@media (max-width:1000px){
+  .hero-grid,.app-grid{grid-template-columns:1fr}
+  .hero::after{display:none}
+  .nav{display:none}
+  .header-inner{gap:20px}
+}
+@media (max-width:560px){
+  /* Side by side they become too narrow to read, so they stack full width. */
+  .actions .btn{flex:1 1 100%}
+  /* The header CTA at full size pushed the page 23px wider than the phone
+     screen, which shows up as the whole page sliding sideways. */
+  .header-inner{gap:14px}
+  .logo img{height:42px}
+  .site-header .btn{padding:10px 13px;font-size:14px;border-radius:9px}
+}
+@media (max-width:400px){
+  /* Below this the wordmark and a full CTA cannot share a row honestly. The
+     quote link still exists further down the page, so the header keeps the
+     logo rather than shrinking both into illegibility. */
+  .site-header .btn{display:none}
+  .wrap{padding:0 20px}
+  .panel,.preview{padding:22px}
+  .hero{padding:48px 0 40px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="#" aria-label="PURCELALEX — data cleaning and web development">
+      <img id="brandLogo" alt="PURCELALEX">
+    </a>
+    <nav class="nav">
+      <a href="#">Home</a>
+      <a href="#">Services</a>
+      <a href="#">Data Cleaner Demo</a>
+      <a href="#app" class="active">Formula Generator<span class="beta">Beta</span></a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+    <a class="btn btn-primary" href="#">Request a quote</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div>
+        <p class="eyebrow">Excel &amp; Google Sheets · RO / EN</p>
+        <h1>Describe it.<br>Get the formula<span class="dot">.</span></h1>
+        <p class="lede">
+          Write what you need in plain Romanian or English, show a few rows of your
+          table, and get a formula built from your own columns — not a generic example.
+        </p>
+        <p class="hero-lead-in">
+          You already know what the spreadsheet should do. What you forget is whether
+          it is <b>SUMIF</b> or <b>SUMIFS</b>, and why Excel wants a semicolon where the
+          tutorial used a comma. That is a memory problem, not a thinking problem.
+        </p>
+      </div>
+
+      <ul class="hero-points">
+        <li>
+          <span class="mark">1</span>
+          <span><b>It reads your actual table.</b>
+          Paste a few rows or drop in the file. It works out which column holds what,
+          then writes real references like C2:C4.</span>
+        </li>
+        <li>
+          <span class="mark">2</span>
+          <span><b>It speaks Romanian.</b>
+          Cu sau fără diacritice. The semicolon separator Romanian Excel expects is
+          handled for you, in the language you asked in.</span>
+        </li>
+        <li>
+          <span class="mark">3</span>
+          <span><b>It shows its reasoning.</b>
+          Every answer names the column it used for what, so you can check it instead
+          of trusting a formula you cannot read.</span>
+        </li>
+      </ul>
+
+      <div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#app">Try it now</a>
+          <a class="btn btn-ghost" href="#how">How it works</a>
+        </div>
+        <p class="hero-note">
+          <b>No AI service involved.</b> The engine runs locally on the server. Your
+          table is read in memory, never stored, and never sent anywhere else.
+        </p>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-head">
+        <span class="preview-title">Live example</span>
+        <span class="pill">Română · English</span>
+      </div>
+      <div class="pv-block">
+      <p class="mini-label">This is example</p>
+      <table class="mini-sheet" aria-label="Example table used to build the formula below">
+        <tr>
+          <th class="colref"></th>
+          <th class="colref searched">A</th>
+          <th class="colref">B</th>
+          <th class="colref summed">C</th>
+        </tr>
+        <tr>
+          <td class="rowref">1</td>
+          <td class="hdr searched">City</td>
+          <td class="hdr">Name</td>
+          <td class="hdr summed">Price</td>
+        </tr>
+        <tr>
+          <td class="rowref">2</td>
+          <td class="searched">Chișinău</td>
+          <td>Ana</td>
+          <td class="summed">100</td>
+        </tr>
+        <tr>
+          <td class="rowref">3</td>
+          <td class="searched">Iași</td>
+          <td>Bogdan</td>
+          <td class="summed">200</td>
+        </tr>
+        <tr>
+          <td class="rowref">4</td>
+          <td class="searched">Chișinău</td>
+          <td>Carmen</td>
+          <td class="summed">150</td>
+        </tr>
+      </table>
+      <div class="mini-key">
+        <span><i class="k-search"></i> column A — searched for the city</span>
+        <span><i class="k-sum"></i> column C — the numbers added up</span>
+      </div>
+      </div>
+
+      <div class="pv-block">
+      <p class="preview-q">Tu scrii ce trebuie de făcut</p>
+      <p class="preview-ro">„Adună prețul unde orașul este Chișinău”</p>
+      <p class="preview-q">You write what needs to be done</p>
+      <p class="preview-ro">“Calculate the price for Chisinau”</p>
+      </div>
+
+      <div class="pv-block">
+      <div class="preview-formula">=SUMIF(A2:A4;&quot;Chișinău&quot;;C2:C4)</div>
+      <div class="chip">
+        <span class="tick">✓</span>
+        <span>Rândurile 2 și 4 corespund cu Chișinău, deci rezultatul este 250</span>
+      </div>
+      <div class="chip">
+        <span class="tick">✓</span>
+        <span>Rows 2 and 4 match Chișinău, so the result is 250</span>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="app" id="app">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Generate a formula<span class="beta beta-lg">Beta version</span></h2>
+      <p>Describe the result you want, then paste a few rows or upload a small sample of your sheet.</p>
+    </div>
+
+    <div class="app-grid">
+      <!-- INPUT -->
+      <section class="panel">
+        <div class="field">
+          <label class="lbl" for="description">
+            What should the formula do?
+            <span class="counter"><span id="descCount">0</span>/500</span>
+          </label>
+          <textarea id="description" maxlength="500"
+            placeholder="e.g. sum the price where the city is Chisinau&#10;sau: adună prețul unde orașul este Chișinău"></textarea>
+          <p class="hint">Romanian and English are both understood, with or without diacritics.</p>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="go">Generate formula</button>
+            <button class="btn btn-primary" id="reset" type="button">Reset</button>
+            <span id="status" class="hint" style="margin:0"></span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="lbl">Your table <span class="counter">optional, but far better results</span></label>
+
+          <div class="tabs" role="tablist">
+            <button class="tab" id="tabPaste" role="tab" aria-selected="true" aria-controls="panePaste">Paste cells</button>
+            <button class="tab" id="tabFile" role="tab" aria-selected="false" aria-controls="paneFile">Upload a file</button>
+          </div>
+
+          <div id="panePaste" role="tabpanel">
+            <textarea id="tableText"
+              placeholder="City	Name	Price&#10;Chisinau	Ana	100&#10;Iasi	Bogdan	200"></textarea>
+            <p class="hint">Copy the header row and 3–4 data rows straight from Excel or Sheets.</p>
+          </div>
+
+          <div id="paneFile" role="tabpanel" hidden>
+            <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a spreadsheet file">
+              <strong>Choose a file or drop it here</strong>
+              <span>.xlsx or .csv · up to 2 MB · only the first rows are read</span>
+              <div class="filename" id="filename" hidden></div>
+            </div>
+            <input type="file" id="file" accept=".xlsx,.csv" hidden>
+            <p class="hint">Files with macros (.xlsm, .xls) are refused. Nothing is written to disk.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RESULT -->
+      <section class="panel" id="result" aria-live="polite">
+        <div class="result-empty">
+          <p style="margin-top:0">The formula will appear here, with an explanation of which column was used for what.</p>
+          <p class="sub" style="margin-bottom:8px">Things to try</p>
+          <ul>
+            <li><code>sum price where city is Chisinau</code></li>
+            <li><code>cate randuri au orasul Iasi</code></li>
+            <li><code>count prices over 120</code></li>
+            <li><code>pretul cel mai mic</code></li>
+            <li><code>sum column B where column A is a city</code></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<section class="app" id="how" style="padding-top:0">
+  <div class="wrap">
+    <div class="panel">
+      <p class="sub">How it works</p>
+      <div class="app-grid" style="gap:32px">
+        <div>
+          <p style="margin-top:0"><b>1. Your words are matched to a function.</b> A bilingual knowledge base of
+          spreadsheet functions is searched with BM25 ranking — the same idea a search engine uses, running locally.</p>
+          <p><b>2. Your columns are identified.</b> If a value you mention appears in one of your own cells, that is
+          treated as proof of which column you meant — stronger evidence than the wording alone.</p>
+        </div>
+        <div>
+          <p style="margin-top:0"><b>3. The formula is built as a tree.</b> Not assembled as text, which is why the
+          Romanian semicolon and the English comma are always right, and why quotes inside values never break it.</p>
+          <p><b>4. Nothing is guessed silently.</b> When a column cannot be identified you get a visible
+          <code style="font-family:var(--mono);color:var(--cyan)">"?"</code> to fill in, and every answer says which
+          column it used for what.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year"></span> PURCELALEX — data cleaning / web development</span>
+    <span>Formula engine runs locally · no external AI service</span>
+  </div>
+</footer>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Where the API lives.
+
+   Resolved, not hardcoded, in this order:
+
+   1. window.EFG_API_BASE, if set before this script. This is what production
+      uses: the page is served by Cloudflare Pages and the API lives on its own
+      domain, so the two are genuinely different origins.
+   2. The page's own origin, when it is served over http(s). The backend serves
+      this page during development, so the API is same-origin — which also means
+      it keeps working on any port, not only 8000.
+   3. localhost:8000, only when the file was opened straight from disk. That
+      case cannot work (see below), but guessing the usual address lets the
+      message name the right URL.
+--------------------------------------------------------------------------- */
+const OPENED_FROM_DISK = location.protocol === 'file:';
+const API_BASE = (
+  window.EFG_API_BASE ||
+  (OPENED_FROM_DISK ? 'http://localhost:8000' : location.origin)
+).replace(/\/$/, '');
+
+const $ = (id) => document.getElementById(id);
+const descriptionEl = $('description');
+const tableEl = $('tableText');
+const resultEl = $('result');
+const statusEl = $('status');
+const goEl = $('go');
+const fileInput = $('file');
+const dropEl = $('drop');
+const filenameEl = $('filename');
+
+/* Captured before anything overwrites it, so Reset restores the real starting
+   panel — including the example prompts — rather than a copy that has to be
+   kept in sync with the markup. */
+const EMPTY_RESULT = document.getElementById('result').innerHTML;
+
+let mode = 'paste';
+let chosenFile = null;
+
+$('year').textContent = new Date().getFullYear();
+
+/* A page opened straight from disk has a file:// address. Browsers refuse to
+   let such a page call an API on localhost — the request never leaves, so it
+   looks exactly like a server that is down. Say what is actually wrong,
+   immediately, instead of letting the user debug a backend that is fine. */
+if (OPENED_FROM_DISK) {
+  resultEl.innerHTML = `
+    <div class="notice">
+      <b>Open this page at <a href="${API_BASE}" style="color:var(--cyan)">${API_BASE}</a> instead.</b><br>
+      You have opened the file directly from your computer, and browsers block a
+      page loaded this way from calling an API — even one running on your own
+      machine. The backend serves this same page at that address.
+    </div>`;
+}
+
+/* The logo is embedded so the page renders correctly when opened directly
+   from disk, with no server and no missing-image placeholder. */
+$('brandLogo').src = 'data:image/png;base64,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';
+
+/* ---- character counter ---- */
+descriptionEl.addEventListener('input', () => {
+  $('descCount').textContent = descriptionEl.value.length;
+});
+
+/* ---- tabs ---- */
+function selectTab(next) {
+  mode = next;
+  const paste = next === 'paste';
+  $('tabPaste').setAttribute('aria-selected', String(paste));
+  $('tabFile').setAttribute('aria-selected', String(!paste));
+  $('panePaste').hidden = !paste;
+  $('paneFile').hidden = paste;
+}
+$('tabPaste').addEventListener('click', () => selectTab('paste'));
+$('tabFile').addEventListener('click', () => selectTab('file'));
+selectTab('paste');
+
+/* ---- file choosing ---- */
+dropEl.addEventListener('click', () => fileInput.click());
+dropEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
+['dragenter', 'dragover'].forEach((type) =>
+  dropEl.addEventListener(type, (e) => { e.preventDefault(); dropEl.classList.add('over'); }));
+['dragleave', 'drop'].forEach((type) =>
+  dropEl.addEventListener(type, (e) => { e.preventDefault(); dropEl.classList.remove('over'); }));
+dropEl.addEventListener('drop', (e) => {
+  if (e.dataTransfer.files.length) setFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) setFile(fileInput.files[0]);
+});
+function setFile(file) {
+  chosenFile = file;
+  filenameEl.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
+  filenameEl.hidden = false;
+}
+
+/* ---- reset ---- */
+$('reset').addEventListener('click', () => {
+  descriptionEl.value = '';
+  tableEl.value = '';
+  chosenFile = null;
+  fileInput.value = '';          // without this the same file cannot be re-picked
+  filenameEl.hidden = true;
+  filenameEl.textContent = '';
+  $('descCount').textContent = '0';
+  selectTab('paste');
+  resultEl.innerHTML = EMPTY_RESULT;
+  descriptionEl.focus();
+});
+
+/* ---- submit ---- */
+goEl.addEventListener('click', generate);
+descriptionEl.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') generate();
+});
+
+async function generate() {
+  const description = descriptionEl.value.trim();
+  if (!description) {
+    showError('Describe what the formula should do first.');
+    descriptionEl.focus();
+    return;
+  }
+
+  setBusy(true);
+  try {
+    const response = await callApi(description);
+    const body = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      // FastAPI puts validation problems in `detail`, which may be a list.
+      const detail = Array.isArray(body.detail)
+        ? body.detail.map((d) => d.msg).join('; ')
+        : body.detail;
+      showError(detail || `The server returned ${response.status}.`);
+      return;
+    }
+    render(body);
+  } catch (error) {
+    showError(
+      OPENED_FROM_DISK
+        ? `This page was opened from a file, so the browser blocked the call. ` +
+          `Open ${API_BASE} instead — the backend serves this same page there.`
+        : `Could not reach the API at ${API_BASE}. Check that the container is ` +
+          `running ("docker compose up") and that the terminal shows ` +
+          `"Application startup complete".`
+    );
+  } finally {
+    setBusy(false);
+  }
+}
+
+function callApi(description) {
+  const tableText = tableEl.value.trim();
+
+  if (mode === 'file' && chosenFile) {
+    const form = new FormData();
+    form.append('description', description);
+    form.append('file', chosenFile);
+    return fetch(`${API_BASE}/api/generate/file`, { method: 'POST', body: form });
+  }
+
+  const json = (path, payload) =>
+    fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+  if (mode === 'paste' && tableText) {
+    return json('/api/generate/paste', { description, table: tableText });
+  }
+  return json('/api/generate', { description });
+}
+
+function setBusy(busy) {
+  goEl.disabled = busy;
+  goEl.innerHTML = busy
+    ? '<span class="spinner"></span> Working…'
+    : 'Generate formula';
+  statusEl.textContent = busy ? '' : statusEl.textContent;
+}
+
+/* ---- rendering ---- */
+const escapeHtml = (value) =>
+  String(value ?? '').replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function showError(message) {
+  resultEl.innerHTML = `<div class="notice error">${escapeHtml(message)}</div>`;
+}
+
+function render(data) {
+  if (data.status === 'no_match' || !data.formula) {
+    resultEl.innerHTML = `<div class="notice">${escapeHtml(data.rationale ||
+      'No matching function was found. Try rephrasing.')}</div>`;
+    return;
+  }
+
+  const safety = data.safety || {};
+  const warnings = safety.warnings || [];
+  const defanged = safety.injection_cells_defanged || [];
+
+  const badges = [
+    `<span class="badge ${data.status === 'filled' ? 'ok' : 'warn'}">${
+      data.status === 'filled' ? 'built from your columns' : 'pattern to adapt'}</span>`,
+    `<span class="badge">${data.language === 'ro' ? 'Română' : 'English'}</span>`,
+    `<span class="badge">${data.locale === 'eu' ? 'separator ;' : 'separator ,'}</span>`,
+    data.function ? `<span class="badge">${escapeHtml(data.function)}</span>` : '',
+  ].join('');
+
+  const columns = (data.columns || []).length
+    ? `<p class="sub">Columns read</p>
+       <table class="cols">
+         <tr><th>Col</th><th>Header</th><th>Type</th></tr>
+         ${data.columns.map((c) => `
+           <tr>
+             <td>${escapeHtml(c.letter)}</td>
+             <td>${escapeHtml(c.header)}</td>
+             <td class="type">${escapeHtml(c.type)}</td>
+           </tr>`).join('')}
+       </table>`
+    : '';
+
+  const notices = [
+    ...warnings.map((w) => `<div class="notice">${escapeHtml(w)}</div>`),
+    defanged.length
+      ? `<div class="notice">${defanged.length} cell${defanged.length > 1 ? 's' : ''} started with
+         =, +, - or @ and ${defanged.length > 1 ? 'were' : 'was'} neutralised, so they cannot run as
+         formulas anywhere.</div>`
+      : '',
+  ].join('');
+
+  const others = (data.candidates || []).filter((c) => c.name !== data.function);
+  const alternatives = others.length
+    ? `<div class="alt">
+         <p class="sub">Other functions that might fit</p>
+         ${others.map((c) => `
+           <div class="alt-item">
+             <div class="alt-name">${escapeHtml(c.name)}
+               <span>${escapeHtml((c.platforms || []).join(' · '))}</span></div>
+             ${c.example ? `<div class="alt-formula">${escapeHtml(c.example)}</div>` : ''}
+             ${c.explanation ? `<div class="alt-explain">${escapeHtml(c.explanation)}</div>` : ''}
+           </div>`).join('')}
+       </div>`
+    : '';
+
+  resultEl.innerHTML = `
+    <div class="badges">${badges}</div>
+    <div class="formula-box">
+      <div class="formula" id="formulaText">${escapeHtml(data.formula)}</div>
+      <button class="copy" id="copyBtn">Copy</button>
+    </div>
+    ${data.rationale ? `<div class="rationale">${escapeHtml(data.rationale)}</div>` : ''}
+    ${notices}
+    ${columns}
+    ${alternatives}`;
+
+  $('copyBtn').addEventListener('click', async () => {
+    const button = $('copyBtn');
+    try {
+      await navigator.clipboard.writeText(data.formula);
+      button.textContent = 'Copied';
+    } catch {
+      // Clipboard access is blocked in some contexts; select the text instead
+      // so the user can copy it manually rather than being left with nothing.
+      const range = document.createRange();
+      range.selectNodeContents($('formulaText'));
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      button.textContent = 'Selected';
+    }
+    setTimeout(() => { button.textContent = 'Copy'; }, 1600);
+  });
+}
+</script>
+</body>
+</html>

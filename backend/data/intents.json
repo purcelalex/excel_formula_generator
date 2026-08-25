@@ -1,0 +1,116 @@
+{
+  "_comment": [
+    "Intent rules as DATA, not Python. Adding a new pattern is an edit here,",
+    "not a code change and not a redeploy of logic.",
+    "",
+    "Matching: an intent fires when the description contains at least one word",
+    "from `triggers`. `condition` decides between the plain and the conditional",
+    "variant of the same verb: 'requires' means the intent only fires when a",
+    "condition is present, 'forbids' means it only fires when one is absent,",
+    "'ignore' means the condition plays no part.",
+    "",
+    "A condition is considered present when either a condition word appears in",
+    "the description, or a value from the description was found inside one of",
+    "the table's sample columns. The second signal is the stronger one: it is",
+    "evidence from the user's own data rather than from their phrasing.",
+    "",
+    "`priority` breaks ties when several intents match; higher wins."
+  ],
+
+  "condition_words": [
+    "where", "if", "only", "when", "with", "per", "for", "having", "that",
+    "unde", "daca", "doar", "numai", "cand", "conditie", "conditii", "care",
+    "pentru", "cu", "din care"
+  ],
+
+  "intents": [
+    {
+      "id": "conditional_sum",
+      "function": "sumif",
+      "builder": "conditional_aggregate",
+      "aggregate": "SUMIF",
+      "condition": "requires",
+      "priority": 20,
+      "triggers": ["sum", "add", "total", "adds", "sums", "addition",
+                   "aduna", "adun", "suma", "sumeaza", "insumeaza", "totalul"]
+    },
+    {
+      "id": "plain_sum",
+      "function": "sum",
+      "builder": "plain_aggregate",
+      "aggregate": "SUM",
+      "condition": "forbids",
+      "priority": 10,
+      "triggers": ["sum", "add", "total", "adds", "sums", "addition",
+                   "aduna", "adun", "suma", "sumeaza", "insumeaza", "totalul"]
+    },
+    {
+      "id": "conditional_count",
+      "function": "countif",
+      "builder": "conditional_count",
+      "aggregate": "COUNTIF",
+      "condition": "requires",
+      "priority": 20,
+      "triggers": ["count", "counts", "many", "number",
+                   "numara", "numar", "cate", "cati", "cantitate"]
+    },
+    {
+      "id": "plain_count",
+      "function": "count",
+      "builder": "plain_aggregate",
+      "aggregate": "COUNTA",
+      "condition": "forbids",
+      "priority": 10,
+      "triggers": ["count", "counts", "many",
+                   "numara", "numar", "cate", "cati"]
+    },
+    {
+      "id": "conditional_average",
+      "function": "averageif",
+      "builder": "conditional_aggregate",
+      "aggregate": "AVERAGEIF",
+      "condition": "requires",
+      "priority": 20,
+      "triggers": ["average", "mean", "avg", "medie", "media", "mediu"]
+    },
+    {
+      "id": "plain_average",
+      "function": "average",
+      "builder": "plain_aggregate",
+      "aggregate": "AVERAGE",
+      "condition": "forbids",
+      "priority": 10,
+      "triggers": ["average", "mean", "avg", "medie", "media", "mediu"]
+    },
+    {
+      "id": "lookup",
+      "function": "xlookup",
+      "builder": "lookup",
+      "aggregate": "XLOOKUP",
+      "condition": "ignore",
+      "priority": 25,
+      "triggers": ["lookup", "look", "find", "search", "vlookup", "xlookup",
+                   "cauta", "cautare", "gaseste", "caut", "regaseste"]
+    },
+    {
+      "id": "maximum",
+      "function": "max",
+      "builder": "plain_aggregate",
+      "aggregate": "MAX",
+      "condition": "ignore",
+      "priority": 15,
+      "triggers": ["max", "maximum", "highest", "largest", "biggest", "top",
+                   "maxim", "maximul", "cel mai mare", "cea mai mare"]
+    },
+    {
+      "id": "minimum",
+      "function": "min",
+      "builder": "plain_aggregate",
+      "aggregate": "MIN",
+      "condition": "ignore",
+      "priority": 15,
+      "triggers": ["min", "minimum", "lowest", "smallest",
+                   "minim", "minimul", "cel mai mic", "cea mai mica"]
+    }
+  ]
+}
