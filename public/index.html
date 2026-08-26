@@ -72,6 +72,31 @@ button,input,textarea,select{font:inherit;color:inherit}
 .nav a:hover{color:var(--cyan)}
 .nav a.active{color:#fff;font-weight:600}
 
+/* Hamburger. Hidden on desktop, where the horizontal bar is the navigation.
+   Below the breakpoint it becomes the ONLY way to reach the other pages, which
+   is why it is a real <button> with aria-expanded rather than a styled div:
+   screen readers and keyboards have to be able to open it too.
+   44px because that is the smallest comfortable touch target on a phone. */
+.menu-toggle{
+  display:none;margin-left:auto;
+  width:44px;height:44px;
+  background:transparent;border:1px solid var(--line);border-radius:10px;
+  padding:0;cursor:pointer;
+  flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  transition:border-color .15s;
+}
+.menu-toggle span{
+  display:block;width:20px;height:2px;background:var(--text-soft);border-radius:2px;
+  transition:transform .18s,opacity .18s,background .15s;
+}
+.menu-toggle:hover{border-color:var(--cyan)}
+.menu-toggle:hover span{background:var(--cyan)}
+/* Open state folds the three bars into an X, so the button also reads as
+   "close" without needing a second control. */
+.menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+.menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
   border:0;border-radius:10px;cursor:pointer;font-weight:700;
@@ -337,12 +362,36 @@ table.cols td:first-child{font-family:var(--mono);color:var(--cyan);width:52px}
 
 /* ---------- responsive ---------- */
 @media (max-width:1220px){
-  .nav{display:none}
+  /* Six links no longer fit on one row. The bar becomes a panel that drops out
+     of the header, and the toggle becomes the way in. It is positioned against
+     .site-header (sticky counts as positioned), so it hangs below the bar and
+     scrolls with it. */
+  .menu-toggle{display:flex}
+  .nav{
+    display:none;
+    position:absolute;top:100%;left:0;right:0;
+    flex-direction:column;align-items:stretch;gap:0;margin-left:0;
+    /* Fully opaque, and deliberately NOT backdrop-filter: the panel covers body
+       text, so anything less than solid makes the links hard to read against
+       whatever happens to be underneath. */
+    background:#07111f;
+    border-bottom:1px solid var(--line-soft);
+    box-shadow:0 14px 28px rgba(0,0,0,.45);
+    padding:6px 0;
+    /* A short phone in landscape must still be able to reach the last link. */
+    max-height:calc(100dvh - 88px);overflow-y:auto;
+  }
+  .nav.is-open{display:flex}
+  .nav a{
+    padding:15px 32px;font-size:16px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav a:last-child{border-bottom:0}
+  .nav a.active{background:rgba(93,214,214,.06)}
 }
 @media (max-width:1000px){
   .hero-grid,.app-grid{grid-template-columns:1fr}
   .hero::after{display:none}
-  .nav{display:none}
   .header-inner{gap:20px}
 }
 @media (max-width:560px){
@@ -372,7 +421,7 @@ table.cols td:first-child{font-family:var(--mono);color:var(--cyan);width:52px}
     <a class="logo" href="https://purcelalex.com/" aria-label="PURCELALEX — data cleaning and web development">
       <img id="brandLogo" alt="PURCELALEX">
     </a>
-    <nav class="nav">
+    <nav class="nav" id="primaryNav">
       <a href="https://purcelalex.com/index.html">Home</a>
       <a href="https://purcelalex.com/services.html">Services</a>
       <a href="https://purcelalex.com/data-cleaner-demo.html">Data Cleaner Demo</a>
@@ -380,6 +429,10 @@ table.cols td:first-child{font-family:var(--mono);color:var(--cyan);width:52px}
       <a href="https://purcelalex.com/about.html">About</a>
       <a href="https://purcelalex.com/contact.html">Contact</a>
     </nav>
+    <button class="menu-toggle" id="menuToggle" type="button"
+            aria-label="Open navigation menu" aria-expanded="false" aria-controls="primaryNav">
+      <span></span><span></span><span></span>
+    </button>
     <a class="btn btn-primary" href="https://purcelalex.com/contact.html">Contact</a>
   </div>
 </header>
@@ -660,6 +713,52 @@ if (OPENED_FROM_DISK) {
 
 /* The logo is embedded so the page renders correctly when opened directly
    from disk, with no server and no missing-image placeholder. */
+/* ---------------------------------------------------------------------------
+   Mobile navigation.
+
+   Below 1220px the header bar cannot hold six links, so the nav collapses into
+   a panel behind the toggle. Everything here exists because the panel is the
+   ONLY way off this page on a phone: it has to close again by every route a
+   person might reasonably try.
+--------------------------------------------------------------------------- */
+(function () {
+  const toggle = $('menuToggle');
+  const nav = $('primaryNav');
+  if (!toggle || !nav) return;
+
+  function setOpen(open) {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    // The label has to describe what the button will DO next, not what it is.
+    toggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+  }
+
+  toggle.addEventListener('click', () => setOpen(nav.classList.contains('is-open') === false));
+
+  // Tapping a link navigates away, but three of these links are same-page or
+  // slow to load; leaving the panel open over the new page looks broken.
+  nav.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
+
+  // Tapping anywhere outside is what most people try first.
+  document.addEventListener('click', (e) => {
+    if (!nav.classList.contains('is-open')) return;
+    if (nav.contains(e.target) || toggle.contains(e.target)) return;
+    setOpen(false);
+  });
+
+  // Escape, for keyboards. Focus returns to the toggle so the user is not
+  // dropped at the top of the document.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) { setOpen(false); toggle.focus(); }
+  });
+
+  // Rotating a phone to landscape can cross the breakpoint. Without this the
+  // panel stays "open" and its class fights the desktop layout.
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1220 && nav.classList.contains('is-open')) setOpen(false);
+  });
+})();
+
 $('brandLogo').src = 'data:image/png;base64,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';
 
 /* ---- character counter ---- */
