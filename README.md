@@ -72,7 +72,7 @@ to D1.
 
 No route branches on which is which. `runtime_for(request)` in `app/runtime.py`
 resolves configuration and storage per request, and everything upstream reads
-the same in both places. `worker/entry.py` contains no logic for that reason:
+the same in both places. `backend/entry.py` contains no logic for that reason:
 the moment it does, it becomes a second copy of the app that drifts.
 
 ### Two entry points, one table

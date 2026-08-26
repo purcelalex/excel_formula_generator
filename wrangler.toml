@@ -8,7 +8,7 @@
 # carries no Origin header and there is nothing to allow.
 
 name = "excel-formula-generator"
-main = "worker/entry.py"
+main = "backend/entry.py"
 compatibility_date = "2026-08-01"
 compatibility_flags = ["python_workers"]
 
@@ -28,17 +28,24 @@ routes = [
   { pattern = "formula.purcelalex.com", custom_domain = true }
 ]
 
-# The Python code lives in backend/, so it has to be uploaded alongside the
-# entry point for `from app.main import app` to resolve.
-[[rules]]
-type = "PythonModule"
-globs = ["backend/app/**/*.py", "worker/**/*.py"]
+# The entry point sits INSIDE backend/, next to the app package, and that is
+# deliberate. Wrangler derives `base_dir` from the entry point and names every
+# bundled module relative to it, so with the entry at backend/entry.py the
+# package resolves as `app.main` — exactly as it does under uvicorn and in the
+# tests. One import path, three environments.
+#
+# There is no "PythonModule" rule here on purpose: wrangler removed that rule
+# type once pywrangler took over Python bundling, and passing it now fails
+# validation with "bindings should have a string type field...". Sibling .py
+# files under base_dir are collected automatically.
 
 # The knowledge base and intent rules are data files the engine reads at
-# startup. Without this they are simply absent from the deployed Worker.
+# startup. Globs are relative to base_dir (backend/), so this is data/, not
+# backend/data/. Without this rule they are simply absent from the Worker and
+# the engine loads zero functions.
 [[rules]]
 type = "Data"
-globs = ["backend/data/*.json"]
+globs = ["data/*.json"]
 
 # ---------------------------------------------------------------------------
 # The page
