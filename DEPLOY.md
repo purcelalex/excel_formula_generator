@@ -31,17 +31,18 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"   # uv, for pywrangle
 wrangler login
 ```
 
-### 2. Create the analytics database
+### 2. The analytics database — already done
+
+`excel-formula-generator` exists in your Cloudflare account (id
+`700a1fda-5c25-421b-bd75-26731d3d1a94`, region EEUR), the `requests` table and
+both indexes are created, and the id is already in `wrangler.toml`. It was
+created through the Cloudflare API, and `d1_migrations` records `0001` as
+applied so `wrangler` will not try to run it again.
+
+Nothing to do here. To verify:
 
 ```powershell
-wrangler d1 create excel-formula-generator
-```
-
-It prints a `database_id`. Paste it into `wrangler.toml`, replacing
-`PASTE_YOUR_D1_DATABASE_ID_HERE`, then create the table:
-
-```powershell
-wrangler d1 migrations apply excel-formula-generator --remote
+wrangler d1 execute excel-formula-generator --remote --command "SELECT name FROM sqlite_master WHERE type='table'"
 ```
 
 ### 3. Set the admin secrets

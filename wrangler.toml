@@ -54,15 +54,18 @@ not_found_handling = "none"
 # ---------------------------------------------------------------------------
 # Analytics
 # ---------------------------------------------------------------------------
-# A Worker has no filesystem, so the SQLite file is replaced by D1. Create it
-# once and paste the id it prints here:
+# A Worker has no filesystem, so the SQLite file is replaced by D1. The
+# database below already exists and migration 0001 is already applied (created
+# through the Cloudflare API on 2026-08-26, region EEUR). The id is not a
+# secret — it is an account-scoped handle and belongs in version control.
 #
+# If you ever recreate it:
 #   wrangler d1 create excel-formula-generator
 #   wrangler d1 migrations apply excel-formula-generator --remote
 [[d1_databases]]
 binding = "DB"
 database_name = "excel-formula-generator"
-database_id = "PASTE_YOUR_D1_DATABASE_ID_HERE"
+database_id = "700a1fda-5c25-421b-bd75-26731d3d1a94"
 migrations_dir = "worker/migrations"
 
 # ---------------------------------------------------------------------------
