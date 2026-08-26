@@ -16,6 +16,9 @@ user data leaving the server.
         filtering on column A (City), sum over column C (Price)
 ```
 
+Runs entirely on Cloudflare — the page and the Python backend in one Worker,
+on one domain, deployed from GitHub. See [DEPLOY.md](DEPLOY.md).
+
 ## Quick start
 
 ```bash
@@ -38,6 +41,7 @@ Five stages, each in its own module, each replaceable on its own.
 
 | Stage | Module | What it does |
 |---|---|---|
+| Runtime | `app/runtime.py` | Where settings and storage come from — container or Worker |
 | Ingestion | `app/ingestion/` | Pasted text or an uploaded file becomes one `ParsedTable` |
 | Language | `app/engine/language.py` | Romanian or English, Excel or Sheets, comma or semicolon |
 | Retrieval | `app/engine/retrieval.py` | BM25 over the bilingual knowledge base |
@@ -57,6 +61,19 @@ surgery that breaks on the first quoted comma.
 **Localisation is correct by construction.** The argument separator (`,` versus
 `;`) and string escaping live in one function. There is no path through the code
 that can emit a formula the renderer has not localised.
+
+### One app, two homes
+
+The same FastAPI application runs as a container and as a Cloudflare Python
+Worker. They disagree about something fundamental — a container has settings in
+`os.environ` at import time and a filesystem for SQLite, while a Worker gets
+settings as a per-request binding and has no filesystem at all, so analytics go
+to D1.
+
+No route branches on which is which. `runtime_for(request)` in `app/runtime.py`
+resolves configuration and storage per request, and everything upstream reads
+the same in both places. `worker/entry.py` contains no logic for that reason:
+the moment it does, it becomes a second copy of the app that drifts.
 
 ### Two entry points, one table
 
@@ -133,7 +150,7 @@ were caught by a red test and fixed in the data.
 
 Working: bilingual parsing, paste and upload ingestion, a knowledge base of 94
 functions, nine intents, formula building with real cell references,
-localisation, analytics, admin auth, the frontend, and 116 passing tests.
+localisation, analytics, admin auth, the frontend, and 125 passing tests.
 
 **Two numbers, deliberately different.** The engine *recognises and explains*
 all 94 functions. It *builds a finished formula from your columns* for the nine

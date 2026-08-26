@@ -80,6 +80,7 @@ The `/docs` page is easier for anything more than a quick check.
 - **The container runs as a non-root user** (`appuser`, uid 1000).
 - **`--reload` is development only.** The production image runs the plain `CMD`
   in the Dockerfile, without it.
+- **This is the development setup.** Production runs on Cloudflare Workers — see DEPLOY.md. The same code serves both.
 - **No `.venv` on your laptop.** If VS Code reports unresolved imports, it is
   looking at your machine's Python while the code runs in the container's. The
   Dev Containers extension resolves it.

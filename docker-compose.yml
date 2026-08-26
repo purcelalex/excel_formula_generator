@@ -16,9 +16,10 @@ services:
       # never in the project folder, so no sync tool can corrupt it.
       - analytics:/data
       # The page, served by the API at http://localhost:8000 so that the
-      # browser sees one origin and has nothing to block. Read-only: the
-      # container never needs to write to your source file.
-      - ./index.html:/app/static/index.html:ro
+      # browser sees one origin and has nothing to block. It lives in public/
+      # because that is the directory Cloudflare serves as static assets —
+      # one copy of the page, not two that drift apart.
+      - ./public/index.html:/app/static/index.html:ro
     environment:
       DB_PATH: /data/analytics.db
       # Read from .env if present. Admin routes stay disabled until both are set;

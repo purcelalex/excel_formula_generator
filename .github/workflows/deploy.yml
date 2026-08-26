@@ -1,0 +1,77 @@
+name: deploy
+
+# Deploys the Worker to Cloudflare on every push to main — but only after the
+# tests pass. A broken deploy that CI could have caught is the one thing an
+# automatic deploy must not do.
+#
+# One repository secret is required:
+#   CLOUDFLARE_API_TOKEN   Cloudflare dashboard → My Profile → API Tokens →
+#                          Create Token → "Edit Cloudflare Workers" template.
+#                          Add it under Settings → Secrets and variables →
+#                          Actions in this repository.
+#
+# The admin password hash and session secret are NOT set here. They are
+# Cloudflare secrets, set once with `wrangler secret put`, and they should
+# never pass through a CI log.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A second push while a deploy is running should queue, not race it.
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: tests must pass first
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run the test suite
+        working-directory: backend
+        run: python -m pytest -q
+
+  deploy:
+    name: deploy the Worker
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Deploy with pywrangler
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: uvx workers-py deploy
+
+      - name: Confirm the deployment is answering
+        run: |
+          # Give the new version a moment to become the live one.
+          sleep 10
+          url="https://excel-formula-generator.${{ vars.CLOUDFLARE_SUBDOMAIN }}.workers.dev/api/health"
+          if [ -z "${{ vars.CLOUDFLARE_SUBDOMAIN }}" ]; then
+            echo "CLOUDFLARE_SUBDOMAIN repository variable is not set — skipping the check."
+            echo "Set it under Settings → Secrets and variables → Actions → Variables"
+            echo "to have every deploy verify itself."
+            exit 0
+          fi
+          echo "checking $url"
+          curl -sf "$url" || { echo "the deployed Worker did not answer"; exit 1; }

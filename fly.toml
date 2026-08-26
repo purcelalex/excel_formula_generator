@@ -1,0 +1,62 @@
+# Fly.io deployment for the backend.
+#
+# Deploy with:   fly deploy
+# Logs:          fly logs
+# Shell:         fly ssh console
+#
+# Change `app` to the name you actually create — it becomes your API address,
+# https://<app>.fly.dev — and put that address in index.html (see DEPLOY.md).
+
+app = "excel-formula-generator"
+
+# Amsterdam. Closest low-latency region to Moldova and Romania out of Fly's
+# European sites; "otp" (Bucharest) also exists if you prefer it.
+primary_region = "ams"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # The analytics database lives on the mounted volume below, NOT inside the
+  # container filesystem — a container is replaced on every deploy, and
+  # anything written inside it goes with it.
+  DB_PATH = "/data/analytics.db"
+
+# Persistent storage for analytics.db. Create it once, before the first deploy:
+#   fly volumes create efg_data --region ams --size 1
+[mounts]
+  source = "efg_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+
+  # The machine suspends when idle and wakes on the next request. This is what
+  # keeps the bill near zero for a portfolio project. The trade-off is a cold
+  # start of a second or two on the first request after a quiet period — set
+  # min_machines_running = 1 if you would rather pay to avoid that.
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 40
+    hard_limit = 50
+
+# Fly stops sending traffic to a machine that fails this, and a deploy that
+# never becomes healthy is rolled back instead of replacing a working version.
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  path = "/api/health"
+  timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  # 512 MB is ample: the engine is pure Python with a 94-entry JSON catalogue.
+  # openpyxl parsing a 2 MB upload is the peak, and it streams rather than
+  # loading the whole workbook.
+  memory = "512mb"

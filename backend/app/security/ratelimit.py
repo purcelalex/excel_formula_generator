@@ -8,7 +8,11 @@ distributed attack.
 
 Two known limits, stated so they are not discovered in production:
   * With more than one instance behind a load balancer, each instance counts
-    separately, so the effective limit multiplies. Move to Redis at that point.
+    separately, so the effective limit multiplies. The same is true of
+    Cloudflare Workers, where each isolate keeps its own counters — this stops
+    a single script hammering one isolate, which is the realistic abuse case,
+    but it is not a global limit. Cloudflare's own rate-limiting rules, applied
+    at the edge in front of the Worker, are the answer when you need one.
   * The client IP comes from the connection unless a trusted proxy header is
     configured. Never trust X-Forwarded-For from the open internet — anyone can
     set it, which turns a rate limiter into a rate suggestion.

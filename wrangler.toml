@@ -1,0 +1,89 @@
+# Cloudflare Worker configuration.
+#
+#   pywrangler dev      run it locally, with a local D1
+#   pywrangler deploy   ship it
+#
+# The page and the API are served by the same Worker on the same domain, which
+# is why no CORS configuration is needed for normal use: a same-origin request
+# carries no Origin header and there is nothing to allow.
+
+name = "excel-formula-generator"
+main = "worker/entry.py"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["python_workers"]
+
+# ---------------------------------------------------------------------------
+# Where it answers
+# ---------------------------------------------------------------------------
+# A subdomain of the main site rather than a path on it. The reason is
+# concrete: this Worker serves BOTH the page and /api/*, so putting it on a
+# path would mean claiming purcelalex.com/api/* as well — a broad claim on the
+# apex domain that would collide the day the main site wants its own /api.
+# On its own hostname the page sits at "/" and the API at "/api/", one route,
+# no conflicts, and still same-origin so no CORS.
+#
+# Comment this out for the first deploy if the DNS record does not exist yet;
+# the Worker is reachable at <name>.<subdomain>.workers.dev regardless.
+routes = [
+  { pattern = "formula.purcelalex.com", custom_domain = true }
+]
+
+# The Python code lives in backend/, so it has to be uploaded alongside the
+# entry point for `from app.main import app` to resolve.
+[[rules]]
+type = "PythonModule"
+globs = ["backend/app/**/*.py", "worker/**/*.py"]
+
+# The knowledge base and intent rules are data files the engine reads at
+# startup. Without this they are simply absent from the deployed Worker.
+[[rules]]
+type = "Data"
+globs = ["backend/data/*.json"]
+
+# ---------------------------------------------------------------------------
+# The page
+# ---------------------------------------------------------------------------
+# Static assets are served before the Worker runs, so index.html costs no
+# Worker invocation at all. Anything not matching a file — every /api/ route —
+# falls through to the Worker.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "none"
+
+# ---------------------------------------------------------------------------
+# Analytics
+# ---------------------------------------------------------------------------
+# A Worker has no filesystem, so the SQLite file is replaced by D1. Create it
+# once and paste the id it prints here:
+#
+#   wrangler d1 create excel-formula-generator
+#   wrangler d1 migrations apply excel-formula-generator --remote
+[[d1_databases]]
+binding = "DB"
+database_name = "excel-formula-generator"
+database_id = "PASTE_YOUR_D1_DATABASE_ID_HERE"
+migrations_dir = "worker/migrations"
+
+# ---------------------------------------------------------------------------
+# Settings
+# ---------------------------------------------------------------------------
+# Public, non-secret values. ALLOWED_ORIGINS matters only if you call the API
+# from a different domain than the one serving the page — leave it empty for
+# the normal same-origin setup.
+[vars]
+ALLOWED_ORIGINS = ""
+RATE_LIMIT_REQUESTS = "20"
+RATE_LIMIT_WINDOW_SECONDS = "60"
+
+# ADMIN_PASSWORD_HASH and ADMIN_SESSION_SECRET are secrets and must NEVER be
+# written here — this file is in git. Set them once with:
+#
+#   wrangler secret put ADMIN_PASSWORD_HASH
+#   wrangler secret put ADMIN_SESSION_SECRET
+#
+# Until both are set the admin routes return 503, which is the correct
+# behaviour for an unconfigured deployment.
+
+[observability]
+enabled = true

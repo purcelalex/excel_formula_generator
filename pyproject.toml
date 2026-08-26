@@ -1,0 +1,34 @@
+[project]
+name = "excel-formula-generator"
+version = "0.3.0"
+description = "Excel and Google Sheets formulas from a plain-language description, in Romanian or English"
+requires-python = ">=3.12"
+
+# Dependencies for the Cloudflare Worker. Python Workers install pure-Python
+# wheels from PyPI, which is what all four of these are:
+#
+#   fastapi          the app itself
+#   openpyxl         reads uploaded .xlsx workbooks
+#   defusedxml       NOT optional — openpyxl uses it when present, and it is
+#                    what refuses XML entity-expansion attacks in a hostile file
+#   python-multipart FastAPI needs it to parse a file upload
+#
+# The container installs from backend/requirements.txt instead, which pins the
+# same set plus the test tools.
+dependencies = [
+    "fastapi",
+    "openpyxl",
+    "defusedxml",
+    "python-multipart",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "httpx",
+    "uvicorn",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+pythonpath = ["backend"]

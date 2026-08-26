@@ -7,29 +7,31 @@ Routes
     POST /api/generate/file     description + uploaded .xlsx/.csv
     POST /api/admin/login       password in, session token out
     GET  /api/admin/analytics   usage summary, session token required
-    GET  /api/health            readiness
+    GET  /api/health            readiness, and which platform is serving
 
-Every generate route funnels into the same FormulaService and the same
-analytics record, so behaviour cannot drift between input methods.
+One app, two homes: a container under uvicorn, and a Cloudflare Python Worker.
+Nothing here branches on which — everything environment-specific is resolved by
+`runtime_for(request)` in runtime.py. That is why the routes read the same in
+both places and why the tests exercise the real code path rather than a
+server-only variant of it.
 """
 
 from __future__ import annotations
 
+import inspect
 import time
-
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
-from .analytics.store import AnalyticsStore
 from .config import settings
 from .engine.pipeline import FormulaService
 from .ingestion.paste import parse_paste
 from .ingestion.sanitize import MAX_CHARS
 from .ingestion.upload import MAX_FILE_BYTES, UploadRejected, parse_upload
+from .runtime import client_ip, runtime_for
 from .security.auth import issue_session, verify_password, verify_session
 from .security.ratelimit import RateLimiter
 
@@ -37,37 +39,63 @@ app = FastAPI(
     title="Excel Formula Generator",
     description="Generates Excel and Google Sheets formulas from a plain-language "
                 "description in Romanian or English. No external AI service is used.",
-    version="0.2.0",
+    version="0.3.0",
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=False,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "Authorization"],
-)
-
+# Built once per process (or per Worker isolate) and reused. Loading the
+# catalogue and building the index is the only startup cost, and it is small.
 service = FormulaService()
-store = AnalyticsStore(settings.DB_PATH)
 limiter = RateLimiter(settings.RATE_LIMIT_REQUESTS, settings.RATE_LIMIT_WINDOW_SECONDS)
+
+CORS_HEADERS = "Content-Type, Authorization"
+CORS_METHODS = "GET, POST, OPTIONS"
+
+
+# ---------------------------------------------------------------------------
+# CORS, resolved per request
+# ---------------------------------------------------------------------------
+# FastAPI's CORSMiddleware takes its allow-list at import time. On Workers the
+# configuration does not exist until a request arrives, so the check is done
+# here instead. Same policy, later decision.
+
+@app.middleware("http")
+async def cors(request: Request, call_next):
+    origin = request.headers.get("origin")
+    allowed = runtime_for(request).allowed_origins
+    permitted = bool(origin) and origin in allowed
+
+    if request.method == "OPTIONS" and origin:
+        if not permitted:
+            # A refused preflight must not look like a successful one, or the
+            # browser reports a confusing failure on the real request instead.
+            return Response(status_code=403)
+        return Response(
+            status_code=204,
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Methods": CORS_METHODS,
+                "Access-Control-Allow-Headers": CORS_HEADERS,
+                "Access-Control-Max-Age": "600",
+                "Vary": "Origin",
+            },
+        )
+
+    response = await call_next(request)
+    if permitted:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+    return response
 
 
 # ---------------------------------------------------------------------------
 # Dependencies
 # ---------------------------------------------------------------------------
 
-def client_ip(request: Request) -> str:
-    """The connecting address.
-
-    X-Forwarded-For is ignored on purpose: it is attacker-controlled unless a
-    trusted proxy is known to overwrite it. When this runs behind Cloudflare,
-    read CF-Connecting-IP here and only then.
-    """
-    return request.client.host if request.client else "unknown"
-
-
 def enforce_rate_limit(request: Request) -> None:
+    runtime = runtime_for(request)
+    limiter.max_requests = runtime.rate_limit_requests
+    limiter.window_seconds = runtime.rate_limit_window_seconds
+
     allowed, retry_after = limiter.check(client_ip(request))
     if not allowed:
         raise HTTPException(
@@ -77,12 +105,28 @@ def enforce_rate_limit(request: Request) -> None:
         )
 
 
-def require_admin(authorization: str = Header(default="")) -> None:
-    if not settings.admin_enabled:
+def require_admin(request: Request) -> None:
+    runtime = runtime_for(request)
+    if not runtime.admin_enabled:
         raise HTTPException(status_code=503, detail="Admin access is not configured on this server.")
-    token = authorization.removeprefix("Bearer ").strip()
-    if not token or not verify_session(settings.ADMIN_SESSION_SECRET, token):
+
+    token = request.headers.get("authorization", "").removeprefix("Bearer ").strip()
+    if not token or not verify_session(runtime.admin_session_secret, token):
         raise HTTPException(status_code=401, detail="Not authorised.")
+
+
+async def record(request: Request, description: str, result, source: str) -> None:
+    """Log the request, whichever store this environment uses.
+
+    The file-backed store is synchronous; the D1 store is not. Awaiting only
+    when there is something to await keeps both routes identical.
+    """
+    store = runtime_for(request).store
+    if store is None:
+        return
+    outcome = store.record(description, result, source)
+    if inspect.isawaitable(outcome):
+        await outcome
 
 
 # ---------------------------------------------------------------------------
@@ -107,27 +151,28 @@ class LoginRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 @app.post("/api/generate", dependencies=[Depends(enforce_rate_limit)])
-def generate(payload: DescriptionRequest) -> dict:
+async def generate(payload: DescriptionRequest, request: Request) -> dict:
     description = payload.description.strip()
     result = service.generate(description)
-    store.record(description, result, source="none")
+    await record(request, description, result, source="none")
     return result.as_dict()
 
 
 @app.post("/api/generate/paste", dependencies=[Depends(enforce_rate_limit)])
-def generate_from_paste(payload: PasteRequest) -> dict:
+async def generate_from_paste(payload: PasteRequest, request: Request) -> dict:
     description = payload.description.strip()
     table = parse_paste(payload.table, has_header=payload.has_header)
     if not table.report.ok:
         raise HTTPException(status_code=422, detail="No table could be read from the pasted text.")
 
     result = service.generate(description, table)
-    store.record(description, result, source="paste")
+    await record(request, description, result, source="paste")
     return result.as_dict()
 
 
 @app.post("/api/generate/file", dependencies=[Depends(enforce_rate_limit)])
 async def generate_from_file(
+    request: Request,
     description: str = Form(..., max_length=settings.MAX_DESCRIPTION_CHARS),
     file: UploadFile = File(...),
 ) -> dict:
@@ -146,7 +191,7 @@ async def generate_from_file(
 
     description = description.strip()
     result = service.generate(description, table)
-    store.record(description, result, source=table.report.source)
+    await record(request, description, result, source=table.report.source)
     return result.as_dict()
 
 
@@ -155,22 +200,30 @@ async def generate_from_file(
 # ---------------------------------------------------------------------------
 
 @app.post("/api/admin/login", dependencies=[Depends(enforce_rate_limit)])
-def admin_login(payload: LoginRequest) -> dict:
-    if not settings.admin_enabled:
+def admin_login(payload: LoginRequest, request: Request) -> dict:
+    runtime = runtime_for(request)
+    if not runtime.admin_enabled:
         raise HTTPException(status_code=503, detail="Admin access is not configured on this server.")
 
-    if not verify_password(payload.password, settings.ADMIN_PASSWORD_HASH):
+    if not verify_password(payload.password, runtime.admin_password_hash):
         # A small delay makes online guessing impractical without a lockout that
         # could be abused to lock the owner out of their own analytics.
         time.sleep(0.5)
         raise HTTPException(status_code=401, detail="Incorrect password.")
 
-    return {"token": issue_session(settings.ADMIN_SESSION_SECRET)}
+    return {"token": issue_session(runtime.admin_session_secret)}
 
 
 @app.get("/api/admin/analytics", dependencies=[Depends(require_admin)])
-def admin_analytics(limit: int = 20) -> dict:
-    return store.summary(limit=max(1, min(limit, 100)))
+async def admin_analytics(request: Request, limit: int = 20) -> dict:
+    store = runtime_for(request).store
+    if store is None:
+        raise HTTPException(status_code=503, detail="No analytics database is configured.")
+
+    outcome = store.summary(limit=max(1, min(limit, 100)))
+    if inspect.isawaitable(outcome):
+        outcome = await outcome
+    return outcome
 
 
 # ---------------------------------------------------------------------------
@@ -178,26 +231,32 @@ def admin_analytics(limit: int = 20) -> dict:
 # ---------------------------------------------------------------------------
 
 @app.get("/api/health")
-def health() -> dict:
+def health(request: Request) -> dict:
+    runtime = runtime_for(request)
     return {
         "status": "ok",
         "functions_loaded": len(service.kb),
         "intents_loaded": len(service.intents.intents),
-        "admin_configured": settings.admin_enabled,
+        "admin_configured": runtime.admin_enabled,
+        "analytics_configured": runtime.store is not None,
+        "platform": runtime.platform,
     }
 
 
+@app.exception_handler(404)
+async def not_found(request: Request, exc) -> JSONResponse:
+    return JSONResponse({"detail": "Not found."}, status_code=404)
+
+
 # ---------------------------------------------------------------------------
-# The page itself
+# The page itself — uvicorn only
 # ---------------------------------------------------------------------------
-# Serving the frontend from the API is a development convenience with a real
-# purpose: it puts the page and the API on the SAME ORIGIN, so the browser has
-# no cross-origin request to block. Opening index.html straight from disk gives
-# it a file:// address, which every browser refuses to let call localhost.
-#
-# In production this does not apply — Cloudflare Pages serves the page and the
-# API lives on its own domain, which is what ALLOWED_ORIGINS is for. The mount
-# is last so that it can never shadow an /api route.
+# Serving the page from the API puts both on one origin, so a browser has no
+# cross-origin request to block. On Cloudflare this block does nothing: there is
+# no filesystem, and the page is served by the Worker's static-assets binding
+# ahead of any route here.
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 if STATIC_DIR.is_dir():
+    from fastapi.staticfiles import StaticFiles
+
     app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
